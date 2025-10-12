@@ -17,7 +17,7 @@ import { useAuth } from '@/hooks/use-auth'
 
 import { updateParticipantRqSchema } from '@/lib/schemas/client'
 
-const ProfileAccount = () => {
+const ProfileTab = () => {
   const { setSessionInfo } = useAuth()
   const { data } = useSuspenseQuery(fetchMyProfile())
   const { data: countries } = useQuery(fetchCountryDropdown(true))
@@ -147,4 +147,4 @@ const ProfileAccount = () => {
   )
 }
 
-export { ProfileAccount }
+export { ProfileTab }

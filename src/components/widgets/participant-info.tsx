@@ -55,7 +55,7 @@ export const ParticipantInfoWidget = () => {
           <div>
             <CardDescription className="text-muted text-xs">Last login</CardDescription>
             <CardDescription className="text-xs text-white">
-              {sessionInfo.lastLogin ? format(sessionInfo.lastLogin, 'dd MMM, yyyy') : '-'}
+              {sessionInfo.lastLoginAt ? format(sessionInfo.lastLoginAt, 'dd MMM, yyyy') : '-'}
             </CardDescription>
           </div>
         </div>
@@ -76,7 +76,7 @@ export const ParticipantInfoWidget = () => {
           <div>
             Complete your profile!
             <Button variant="link" asChild className="w-3.5 px-0 leading-none">
-              <Link to="/profile">
+              <Link to="/settings">
                 <ExternalLink className="size-3.5 text-white" />
               </Link>
             </Button>

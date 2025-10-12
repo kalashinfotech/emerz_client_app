@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { Link, useCanGoBack, useNavigate, useRouter } from '@tanstack/react-router'
-import { ChevronLeftIcon, CircleX, IdCardLanyard, LogOut, MenuIcon, User, UserPen } from 'lucide-react'
+import { ChevronLeftIcon, CircleX, IdCardLanyard, LogOut, MenuIcon, Settings, User } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -91,10 +91,10 @@ const Header = () => {
               <DropdownMenuGroup className="flex flex-col">
                 <DropdownMenuItem
                   onClick={() => {
-                    navigate({ to: '/profile' })
+                    navigate({ to: '/settings' })
                   }}>
-                  <UserPen />
-                  Profile
+                  <Settings />
+                  Settings
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={async () => {

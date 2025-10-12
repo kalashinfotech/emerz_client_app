@@ -16,7 +16,6 @@ import { Route as PublicTermsAndConditionsRouteImport } from './routes/_public/t
 import { Route as PublicPrivacyPolicyRouteImport } from './routes/_public/privacy-policy'
 import { Route as PublicDisclaimerRouteImport } from './routes/_public/disclaimer'
 import { Route as PrivateSettingsRouteImport } from './routes/_private/settings'
-import { Route as PrivateProfileRouteImport } from './routes/_private/profile'
 import { Route as PrivateNotificationsRouteImport } from './routes/_private/notifications'
 import { Route as PrivateDashboardRouteImport } from './routes/_private/dashboard'
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
@@ -58,11 +57,6 @@ const PublicDisclaimerRoute = PublicDisclaimerRouteImport.update({
 const PrivateSettingsRoute = PrivateSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
-  getParentRoute: () => PrivateRouteRoute,
-} as any)
-const PrivateProfileRoute = PrivateProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
   getParentRoute: () => PrivateRouteRoute,
 } as any)
 const PrivateNotificationsRoute = PrivateNotificationsRouteImport.update({
@@ -113,7 +107,6 @@ export interface FileRoutesByFullPath {
   '/signup': typeof AuthSignupRoute
   '/dashboard': typeof PrivateDashboardRoute
   '/notifications': typeof PrivateNotificationsRoute
-  '/profile': typeof PrivateProfileRoute
   '/settings': typeof PrivateSettingsRoute
   '/disclaimer': typeof PublicDisclaimerRoute
   '/privacy-policy': typeof PublicPrivacyPolicyRoute
@@ -129,7 +122,6 @@ export interface FileRoutesByTo {
   '/signup': typeof AuthSignupRoute
   '/dashboard': typeof PrivateDashboardRoute
   '/notifications': typeof PrivateNotificationsRoute
-  '/profile': typeof PrivateProfileRoute
   '/settings': typeof PrivateSettingsRoute
   '/disclaimer': typeof PublicDisclaimerRoute
   '/privacy-policy': typeof PublicPrivacyPolicyRoute
@@ -148,7 +140,6 @@ export interface FileRoutesById {
   '/_auth/signup': typeof AuthSignupRoute
   '/_private/dashboard': typeof PrivateDashboardRoute
   '/_private/notifications': typeof PrivateNotificationsRoute
-  '/_private/profile': typeof PrivateProfileRoute
   '/_private/settings': typeof PrivateSettingsRoute
   '/_public/disclaimer': typeof PublicDisclaimerRoute
   '/_public/privacy-policy': typeof PublicPrivacyPolicyRoute
@@ -166,7 +157,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard'
     | '/notifications'
-    | '/profile'
     | '/settings'
     | '/disclaimer'
     | '/privacy-policy'
@@ -182,7 +172,6 @@ export interface FileRouteTypes {
     | '/signup'
     | '/dashboard'
     | '/notifications'
-    | '/profile'
     | '/settings'
     | '/disclaimer'
     | '/privacy-policy'
@@ -200,7 +189,6 @@ export interface FileRouteTypes {
     | '/_auth/signup'
     | '/_private/dashboard'
     | '/_private/notifications'
-    | '/_private/profile'
     | '/_private/settings'
     | '/_public/disclaimer'
     | '/_public/privacy-policy'
@@ -268,13 +256,6 @@ declare module '@tanstack/react-router' {
       path: '/settings'
       fullPath: '/settings'
       preLoaderRoute: typeof PrivateSettingsRouteImport
-      parentRoute: typeof PrivateRouteRoute
-    }
-    '/_private/profile': {
-      id: '/_private/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof PrivateProfileRouteImport
       parentRoute: typeof PrivateRouteRoute
     }
     '/_private/notifications': {
@@ -355,7 +336,6 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 interface PrivateRouteRouteChildren {
   PrivateDashboardRoute: typeof PrivateDashboardRoute
   PrivateNotificationsRoute: typeof PrivateNotificationsRoute
-  PrivateProfileRoute: typeof PrivateProfileRoute
   PrivateSettingsRoute: typeof PrivateSettingsRoute
   PrivateIdeaAddRoute: typeof PrivateIdeaAddRoute
   PrivateIdeaIndexRoute: typeof PrivateIdeaIndexRoute
@@ -365,7 +345,6 @@ interface PrivateRouteRouteChildren {
 const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
   PrivateDashboardRoute: PrivateDashboardRoute,
   PrivateNotificationsRoute: PrivateNotificationsRoute,
-  PrivateProfileRoute: PrivateProfileRoute,
   PrivateSettingsRoute: PrivateSettingsRoute,
   PrivateIdeaAddRoute: PrivateIdeaAddRoute,
   PrivateIdeaIndexRoute: PrivateIdeaIndexRoute,

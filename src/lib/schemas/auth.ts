@@ -10,7 +10,7 @@ export const signInRqSchema = z.object({
 })
 
 export const changePasswordRqSchema = z.object({
-  oldPassword: z.string(),
+  oldPassword: z.string().optional(),
   newPassword: passwordSchema,
   confirmPassword: z.string(),
 })

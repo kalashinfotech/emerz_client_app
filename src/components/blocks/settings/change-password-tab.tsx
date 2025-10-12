@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios'
 import { toast } from 'sonner'
 
-import type { TError } from '@/types'
+import type { ChangePasswordRq, TError } from '@/types'
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -11,14 +11,13 @@ import { useAppForm } from '@/hooks/use-app-form'
 
 import { changePasswordRqSchema } from '@/lib/schemas/auth'
 
-export const ProfileChangePassword = () => {
+export const ChangePasswordTab = () => {
   const { updatePassword } = UseUpdatePassword()
   const form = useAppForm({
     defaultValues: {
-      oldPassword: '',
       confirmPassword: '',
       newPassword: '',
-    },
+    } as ChangePasswordRq,
     validators: {
       onSubmit: changePasswordRqSchema,
     },

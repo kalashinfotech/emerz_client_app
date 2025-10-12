@@ -55,7 +55,7 @@ function RouteComponent() {
 
   return (
     <div className="flex flex-col items-center space-y-4">
-      <Card className="from-background/10 via-background/20 to-primary-100/10 rounded-2xl bg-radial-[at_50%_75%] to-90% px-0 py-4 shadow-xl backdrop-blur-md md:w-[600px] md:px-4 md:py-8">
+      <Card className="from-background/10 via-background/20 to-primary-100/10 rounded-2xl bg-radial-[at_50%_75%] to-90% px-0 py-4 shadow-xl backdrop-blur-md md:w-[400px] md:px-4 md:py-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-1 text-base font-normal md:text-xl">
             <span>Welcome</span>
@@ -69,6 +69,7 @@ function RouteComponent() {
             onSubmit={(e) => {
               e.preventDefault()
               e.stopPropagation()
+              console.log('in here')
               form.handleSubmit()
             }}>
             <div className="grid w-full items-center gap-4">
@@ -77,7 +78,7 @@ function RouteComponent() {
                   <field.FloatingTextField label="Email ID" autoComplete="username" placeholder="Enter your email ID" />
                 )}
               </form.AppField>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-1">
                 <form.AppField
                   name="password"
                   validators={{
@@ -123,7 +124,7 @@ function RouteComponent() {
                   </div>
                 )}
               </form.AppField>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-1">
                 <form.AppField name="firstName">
                   {(field) => <field.FloatingTextField label="First Name" placeholder="Enter your name" />}
                 </form.AppField>
@@ -131,7 +132,7 @@ function RouteComponent() {
                   {(field) => <field.FloatingTextField label="Last Name" placeholder="Enter your last name" />}
                 </form.AppField>
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-1">
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
                     <form.AppField
@@ -196,10 +197,24 @@ function RouteComponent() {
                   )}
                 </form.AppField>
               </div>
-              <div className="w-full">
+              <div className="w-full space-y-4">
                 <form.AppForm>
                   <form.SubscribeButton className="w-full" label="Register" />
                 </form.AppForm>
+                <div className="flex items-center gap-2">
+                  <div className="bg-muted h-px w-full" />
+                  <p className="shrink-0 text-xs">Or continue with</p>
+                  <div className="bg-muted h-px w-full" />
+                </div>
+                <Button variant="outline" className="w-full" type="button">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path
+                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  Google
+                </Button>
               </div>
             </div>
           </form>

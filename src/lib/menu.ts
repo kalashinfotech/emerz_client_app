@@ -17,14 +17,14 @@ export const menu: Menu = {
         {
           id: 102,
           name: 'Notifications',
-          to: 'notifications',
+          to: '/notifications',
           icon: Bell,
           animateClass: 'group-hover/icon:animate-wiggle',
         },
         {
           id: 103,
           name: 'Settings',
-          to: 'settings',
+          to: '/settings',
           icon: Settings,
           animateClass: 'group-hover/icon:animate-spin',
         },
