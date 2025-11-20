@@ -27,9 +27,9 @@ export function SubscribeButton({ label, icon: Icon, ...props }: { label: string
   const form = useFormContext()
 
   return (
-    <form.Subscribe selector={(state) => state.isSubmitting}>
-      {(isSubmitting) => (
-        <Button type="submit" disabled={isSubmitting} {...props}>
+    <form.Subscribe selector={(state) => [state.isSubmitting, state.canSubmit]}>
+      {([isSubmitting, canSubmit]) => (
+        <Button type="submit" disabled={isSubmitting || !canSubmit} {...props}>
           {isSubmitting ? <Loader2 className="animate-spin" /> : <>{Icon && <Icon />}</>}
           {label}
         </Button>

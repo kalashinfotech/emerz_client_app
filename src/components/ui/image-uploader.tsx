@@ -132,6 +132,7 @@ export function ImageUploader({
       }
 
       setFinalImageUrl(newFinalUrl)
+      console.log('cropped', croppedFile)
 
       onComplete && onComplete(croppedFile, newFinalUrl)
 
@@ -174,6 +175,7 @@ export function ImageUploader({
     <div className={className}>
       <div className="relative inline-flex">
         <button
+          type="button"
           className={`border-input hover:bg-accent/50 data-[dragging=true]:bg-accent/50 focus-visible:border-ring focus-visible:ring-ring/50 relative flex items-center justify-center overflow-hidden rounded-full border border-dashed transition-colors outline-none focus-visible:ring-[3px] has-disabled:pointer-events-none has-disabled:opacity-50 has-[img]:border-none`}
           style={{ width: size, height: size }}
           onClick={openFileDialog}

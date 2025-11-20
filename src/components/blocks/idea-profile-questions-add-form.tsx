@@ -10,7 +10,7 @@ export const IdeaAnswerForm = withForm({
     title: '',
     desc: '',
     invites: [],
-    profileAnswers: [],
+    answers: [],
   } as CreateIdeaRqDto,
   props: {
     currentStep: 1,
@@ -19,7 +19,7 @@ export const IdeaAnswerForm = withForm({
   render: ({ form, currentStep, data }) => {
     const QUESTIONS = data.data
     return (
-      <form.AppField name="profileAnswers" mode="array">
+      <form.AppField name="answers" mode="array">
         {(field) => {
           const [_first, ...rest] = field.state.value
           return (
@@ -27,7 +27,7 @@ export const IdeaAnswerForm = withForm({
               {rest.map((_, index) => (
                 <div key={`q-${index}`}>
                   {currentStep === index && (
-                    <form.AppField name={`profileAnswers[${index + 1}].answer`}>
+                    <form.AppField name={`answers[${index + 1}].answer`}>
                       {(subField) => {
                         return (
                           <div>

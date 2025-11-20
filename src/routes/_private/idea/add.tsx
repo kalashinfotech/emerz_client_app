@@ -53,7 +53,7 @@ function RouteComponent() {
       title: '',
       desc: '',
       invites: [],
-      profileAnswers: answersArray,
+      answers: answersArray,
     } as CreateIdeaRqDto,
     validators: {
       onSubmit: createIdeaRqSchema,
@@ -77,6 +77,7 @@ function RouteComponent() {
   const title = useStore(form.store, (state) => state.values.title)
   const titleMeta = useStore(form.store, (state) => state.fieldMeta.title)
   const formErrors = useStore(form.store, (state) => state.errors)
+  console.log(formErrors)
 
   const handleNext = () => {
     // Bounds check
@@ -86,7 +87,7 @@ function RouteComponent() {
     }
     const isCurrentStepValid = (currentStep: number): boolean => {
       if (currentStep === 0) {
-        const key = `profileAnswers[0].answer`
+        const key = `answers[0].answer`
         const firstErr = formErrors[0]
         let er = false
         if (titleMeta.errors.length) {
@@ -94,17 +95,17 @@ function RouteComponent() {
           er = true
         }
         if (firstErr && Object.prototype.hasOwnProperty.call(firstErr, key)) {
-          form.validateField(`profileAnswers[${currentStep}].answer`, 'submit')
+          form.validateField(`answers[${currentStep}].answer`, 'submit')
           er = true
         }
         if (er) return false
         return true
       }
-      const key = `profileAnswers[${subStep + 1}].answer`
+      const key = `answers[${subStep + 1}].answer`
       const firstErr = formErrors[0]
 
       if (firstErr && Object.prototype.hasOwnProperty.call(firstErr, key)) {
-        form.validateField(`profileAnswers[${subStep + 1}].answer`, 'submit')
+        form.validateField(`answers[${subStep + 1}].answer`, 'submit')
         return false
       }
 
@@ -167,30 +168,30 @@ function RouteComponent() {
             <CardDescription className="mx-auto flex w-full items-center gap-1 py-4">
               <p
                 className={cn(
-                  'bg-success text-background flex size-6 shrink-0 items-center justify-center rounded-full text-xs',
-                  { 'bg-success size-8': step === 0 },
+                  'bg-primary text-background flex size-6 shrink-0 items-center justify-center rounded-full text-xs',
+                  { 'bg-primary size-8': step === 0 },
                 )}>
                 {step === 0 ? 1 : <Check className="size-4" />}
               </p>
-              <Progress value={(step / 1) * 100} className="bg-muted h-0.5" indicatorClassName="bg-success" />
+              <Progress value={(step / 1) * 100} className="bg-muted h-0.5" indicatorClassName="bg-primary" />
               <p
                 className={cn(
-                  'bg-success text-background flex size-6 shrink-0 items-center justify-center rounded-full text-xs',
+                  'bg-primary text-background flex size-6 shrink-0 items-center justify-center rounded-full text-xs',
                   { 'bg-muted text-muted-foreground': step < 1 },
-                  { 'bg-success size-8': step === 1 },
+                  { 'bg-primary size-8': step === 1 },
                 )}>
                 {step <= 1 && subStep === 0 ? 2 : <Check className="size-4" />}
               </p>
               <Progress
                 value={(subStep / totalSubSteps) * 100}
                 className="bg-muted h-0.5"
-                indicatorClassName="bg-success"
+                indicatorClassName="bg-primary"
               />
               <p
                 className={cn(
-                  'bg-success text-background flex size-6 shrink-0 items-center justify-center rounded-full text-xs',
+                  'bg-primary text-background flex size-6 shrink-0 items-center justify-center rounded-full text-xs',
                   { 'bg-muted text-muted-foreground': step !== 2 },
-                  { 'bg-success size-8': step === 2 },
+                  { 'bg-primary size-8': step === 2 },
                 )}>
                 3
               </p>
@@ -210,7 +211,7 @@ function RouteComponent() {
                   />
                 )}
               </form.AppField>
-              <form.AppField name={`profileAnswers[${0}].answer`}>
+              <form.AppField name={`answers[${0}].answer`}>
                 {(subField) => {
                   return (
                     <subField.TextArea
@@ -266,7 +267,7 @@ function RouteComponent() {
                     <ChevronLeft />
                     Back
                   </Button>
-                  <Button type="button" variant={'default'} onClick={handleNext}>
+                  <Button type="button" variant={'default'} onClick={handleNext} disabled={profileIncomplete}>
                     Next
                     <ChevronRight />
                   </Button>
@@ -285,7 +286,7 @@ function RouteComponent() {
               <AlertTitle>
                 Click{' '}
                 <span className="underline underline-offset-3">
-                  <Link to="/profile">here</Link>
+                  <Link to="/settings">here</Link>
                 </span>{' '}
                 to complete your profile.
               </AlertTitle>

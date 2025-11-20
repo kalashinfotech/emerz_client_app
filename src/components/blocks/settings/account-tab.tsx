@@ -4,7 +4,9 @@ import { toast } from 'sonner'
 
 import type { TError, UpdateParticipantRqDto } from '@/types'
 
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Label } from '@/components/ui/label'
 
 import { UseUpdateMyProfile, fetchMyProfile } from '@/api/participant'
 
@@ -14,8 +16,8 @@ import { useAuth } from '@/hooks/use-auth'
 import { updateParticipantRqSchema } from '@/lib/schemas/client'
 
 const AccountTab = () => {
-  const { setSessionInfo } = useAuth()
-  const { data } = useSuspenseQuery(fetchMyProfile())
+  const { setSessionInfo, sessionInfo } = useAuth()
+  const { data } = useSuspenseQuery(fetchMyProfile(sessionInfo?.id || ''))
   const { updateMyProfile } = UseUpdateMyProfile()
   const queryClient = useQueryClient()
   const form = useAppForm({
@@ -56,11 +58,22 @@ const AccountTab = () => {
                 <field.TextField className="w-full flex-1 shrink-0" label="Email ID" disabled placeholder="Email" />
               )}
             </form.AppField>
-            <form.AppField name="googleId">
-              {(field) => (
-                <field.TextField className="w-full flex-1 shrink-0" label="Google ID" disabled placeholder="Email" />
-              )}
-            </form.AppField>
+            <div className="flex items-center gap-4">
+              <form.AppField name="googleId">
+                {(field) => (
+                  <field.TextField
+                    className="w-full flex-1 shrink-0"
+                    label="Google ID"
+                    disabled
+                    placeholder="Google ID"
+                  />
+                )}
+              </form.AppField>
+              <div>
+                <div className="mb-2 ml-1 flex justify-between text-xs leading-5">-</div>
+                <Button>Disconnect</Button>
+              </div>
+            </div>
           </div>
         </CardContent>
         <CardFooter>

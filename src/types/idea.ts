@@ -6,6 +6,7 @@ import type {
   fetchIdeaQySchema,
   fetchIdeaRsSchema,
   fetchMyIdeaListRsSchema,
+  ideaSchema,
   updateIdeaRqSchema,
 } from '@/lib/schemas/idea'
 
@@ -15,3 +16,4 @@ export type FetchIdeaQyDto = z.infer<typeof fetchIdeaQySchema>
 export type FetchMyIdeaListRsDto = z.infer<typeof fetchMyIdeaListRsSchema>
 export type FetchIdeaRsDto = z.infer<typeof fetchIdeaRsSchema>
 export type CreateIdeaInvitesRqDto = z.infer<typeof createIdeaInvitesRqSchema>
+export type IdeaModel = z.infer<typeof ideaSchema>

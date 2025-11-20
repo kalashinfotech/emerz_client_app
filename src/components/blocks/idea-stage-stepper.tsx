@@ -1,46 +1,44 @@
 import React from 'react'
 
-import { ClipboardCheck, FileEdit, Flag, SearchCheck, ShieldCheck } from 'lucide-react'
+import { ClipboardCheck, FileEdit, SearchCheck, ShieldCheck } from 'lucide-react'
+
+import type { IdeaStageEnum, IdeaStatusEnum } from '@/lib/schemas/idea'
+import { titleCase } from '@/lib/text-utils'
 
 // Keep stage names in sync with your backend enum
-export type IdeaStage = 'DRAFT' | 'PRE_VALIDATION' | 'READINESS' | 'VALIDATION' | 'FINALIZED' | 'ARCHIVED' | 'DELETED'
+export type IdeaStage = 'STAGE_0' | 'STAGE_1' | 'STAGE_2' | 'STAGE_3'
 
 const steps = [
   {
-    key: 'DRAFT' as IdeaStage,
+    key: 'STAGE_0' as IdeaStage,
     title: 'Draft',
     description: 'Idea is being drafted and can be edited before submission.',
     Icon: FileEdit,
   },
   {
-    key: 'PRE_VALIDATION' as IdeaStage,
+    key: 'STAGE_1' as IdeaStage,
     title: 'Pre-Validation',
     description: 'Idea is submitted for initial review before moving forward.',
     Icon: SearchCheck,
   },
   {
-    key: 'READINESS' as IdeaStage,
+    key: 'STAGE_2' as IdeaStage,
     title: 'Readiness',
     description: 'Idea is being checked for completeness and feasibility.',
     Icon: ClipboardCheck,
   },
   {
-    key: 'VALIDATION' as IdeaStage,
+    key: 'STAGE_3' as IdeaStage,
     title: 'Validation',
     description: 'Idea undergoes final validation before completion.',
     Icon: ShieldCheck,
-  },
-  {
-    key: 'FINALIZED' as IdeaStage,
-    title: 'Finalized',
-    description: 'Idea journey is complete — either approved or rejected.',
-    Icon: Flag,
   },
 ]
 
 type Props = {
   /** Current stage key (highlights this step and all previous as completed) */
-  currentStage?: IdeaStage
+  currentStage?: IdeaStageEnum
+  currentStatus?: IdeaStatusEnum
   /** Optional: render compact (icon + title only) */
   compact?: boolean
   /** Optional className for outer wrapper */
@@ -53,7 +51,12 @@ type Props = {
  * - highlights completed / active / upcoming steps
  * - uses shadcn utility tokens (primary / muted)
  */
-export function IdeaStatusStepper({ currentStage = 'READINESS', compact = false, className = '' }: Props) {
+export function IdeaStatusStepper({
+  currentStage = 'STAGE_0',
+  currentStatus = 'IN_PROGRESS',
+  compact = false,
+  className = '',
+}: Props) {
   const currentIndex = steps.findIndex((s) => s.key === currentStage)
 
   return (
@@ -102,7 +105,7 @@ export function IdeaStatusStepper({ currentStage = 'READINESS', compact = false,
                   )}
                   {isActive && (
                     <span className="bg-primary/10 text-primary ml-2 rounded-full px-2 py-0.5 text-xs font-medium">
-                      Active
+                      {titleCase(currentStatus, '_')}
                     </span>
                   )}
                 </div>

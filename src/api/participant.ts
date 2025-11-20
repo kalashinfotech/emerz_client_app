@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 
-import type { FetchParticipantRsDto, UpdateParticipantRqDto } from '@/types'
+import type { FetchParticipantRsDto, UpdateParticipantRqDto, UpdateParticipantRsDto } from '@/types'
 
 import { fetchQuery } from '.'
 import { axiosPrivate } from './axios'
@@ -8,9 +8,10 @@ import { axiosPrivate } from './axios'
 const baseSuburl = '/participant'
 const queryKey = ['participant']
 
-export const fetchMyProfile = (enabled: boolean = true) => {
+// NOTE: passing id to avoid caching issues
+export const fetchMyProfile = (id: string, enabled: boolean = true) => {
   const endpoint = `${baseSuburl}/me`
-  return fetchQuery<FetchParticipantRsDto>(endpoint, { queryKey: [...queryKey, 'profile'], enabled })
+  return fetchQuery<FetchParticipantRsDto>(endpoint, { queryKey: [...queryKey, id, 'profile'], enabled })
 }
 
 export const UseUpdateMyProfile = () => {
@@ -23,9 +24,12 @@ export const UseUpdateMyProfile = () => {
     isSuccess,
   } = useMutation({
     mutationKey: ['participant', 'profile'],
-    mutationFn: async ({ request }: { request: UpdateParticipantRqDto }): Promise<FetchParticipantRsDto> => {
+    mutationFn: async ({ request }: { request: UpdateParticipantRqDto }): Promise<UpdateParticipantRsDto> => {
       const endPoint = `${baseSuburl}/me`
-      const response = await axiosPrivate.put(endPoint, request)
+      const response = await axiosPrivate.put(endPoint, request, {
+        headers: { 'content-type': 'multipart/form-data' },
+        formSerializer: { indexes: null, dots: false },
+      })
       return response.data
     },
   })

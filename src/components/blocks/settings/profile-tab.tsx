@@ -31,6 +31,7 @@ const ProfileTab = () => {
       // onChange: updateParticipantRqSchema,
     },
     onSubmit: async ({ value }) => {
+      console.log('value is ', value)
       try {
         const updatedData = await updateMyProfile({ request: value })
         toast.success('Success', {
@@ -50,12 +51,13 @@ const ProfileTab = () => {
   const stateId = useStore(form.store, (state) => state.values.stateId)
   const { data: states } = useQuery(fetchStateDropdown(Number(countryId), !!countryId))
   const handleAvatarComplete = (file: File, objectUrl: string) => {
-    console.log('Cropped file:', file)
-    console.log('Preview URL:', objectUrl)
+    console.log('Cropped file:', file, typeof file)
+    console.log('Preview URL:', objectUrl, typeof objectUrl)
 
-    // Example: upload file to backend
-    const formData = new FormData()
-    formData.append('avatar', file)
+    // // Example: upload file to backend
+    // const formData = new FormData()
+    // formData.append('avatar', file)
+    form.setFieldValue('profilePicture', file)
     // fetch("/api/upload-avatar", { method: "POST", body: formData })
   }
 
@@ -78,7 +80,11 @@ const ProfileTab = () => {
               size={120}
               onComplete={handleAvatarComplete}
               onRemove={handleAvatarRemove}
-              initialImageUrl={undefined}
+              initialImageUrl={
+                data.profilePicId
+                  ? `${import.meta.env.VITE_BACKEND_URL}/client/participant/profile/${data.profilePicId}?size=thumbnail`
+                  : null
+              }
             />
             <div className="grid grid-cols-2 gap-4">
               <form.AppField name="firstName">

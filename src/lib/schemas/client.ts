@@ -54,8 +54,8 @@ export const participantSchema = baseParticipantSchema.extend({
   lastLoginUserAgent: z.string().nullable(),
   lastLoginProvider: z.string().nullable(),
   loginCount: z.int(),
-  profileImageId: z.number().optional().nullable(),
   googleId: z.string().optional().nullable(),
+  profilePicId: z.int().nullable(),
   batch: bareBatchSchemaWithInstitution.nullable(),
   tosAgreed: z.boolean(),
   tosAgreedDate: z.coerce.date().nullable(),
@@ -85,4 +85,9 @@ export const fetchParticipantRsSchema = participantSchema.extend({
   completionPercentage: z.number().default(0),
 })
 
-export const updateParticipantRqSchema = baseParticipantSchema.extend({})
+export const updateParticipantRqSchema = baseParticipantSchema.extend({
+  profilePicture: z.file().optional(),
+  googleId: z.string().optional(),
+})
+
+export const updateParticipantRsSchema = fetchParticipantRsSchema

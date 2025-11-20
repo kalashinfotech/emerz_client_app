@@ -63,7 +63,12 @@ const Header = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="cursor-pointer">
               <Avatar>
-                <AvatarImage className="object-cover" src={`${import.meta.env.VITE_BACKEND_URL}/client/me/thumbnail`} />
+                {sessionInfo.profilePicId && (
+                  <AvatarImage
+                    className="object-cover"
+                    src={`${import.meta.env.VITE_BACKEND_URL}/client/participant/profile/${sessionInfo.profilePicId || 1}?size=thumbnail`}
+                  />
+                )}
                 <AvatarFallback className="border">
                   <span className="text-xs">{initials}</span>
                 </AvatarFallback>

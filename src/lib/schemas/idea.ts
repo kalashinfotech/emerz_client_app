@@ -6,25 +6,25 @@ import { bareParticipantSchema, baseParticipantSchema } from './client'
 import { createIdeaProfileAnswerRqSchema, ideaProfileAnswerSchema, updateIdeaProfileAnswerRqSchema } from './idea-profile'
 
 export const IdeaStageEnum = {
-  DRAFT: 'DRAFT',
-  PRE_VALIDATION: 'PRE_VALIDATION',
-  READINESS: 'READINESS',
-  VALIDATION: 'VALIDATION',
-  FINALIZED: 'FINALIZED',
-  ARCHIVED: 'ARCHIVED',
-  DELETED: 'DELETED',
+  STAGE_0: 'STAGE_0',
+  STAGE_1: 'STAGE_1',
+  STAGE_2: 'STAGE_2',
+  STAGE_3: 'STAGE_3',
 } as const
 
 export type IdeaStageEnum = (typeof IdeaStageEnum)[keyof typeof IdeaStageEnum]
 
-export const IdeaDecisionEnum = {
+export const IdeaStatusEnum = {
+  IN_PROGRESS: 'IN_PROGRESS',
   PENDING: 'PENDING',
-  OK: 'OK',
-  REJECT: 'REJECT',
-  REDO: 'REDO',
+  IN_REVIEW: 'IN_REVIEW',
+  COACH_PENDING: 'COACH_PENDING',
+  COACH_REVIEW: 'COACH_REVIEW',
+  REJECTED: 'REJECTED',
+  COMPLETED: 'COMPLETED',
 } as const
 
-export type IdeaDecisionEnum = (typeof IdeaDecisionEnum)[keyof typeof IdeaDecisionEnum]
+export type IdeaStatusEnum = (typeof IdeaStatusEnum)[keyof typeof IdeaStatusEnum]
 
 export const CollaboratorStatus = {
   PENDING: 'PENDING',
@@ -58,11 +58,11 @@ const baseIdeaSchema = z.object({
 
 export const createIdeaRqSchema = baseIdeaSchema.extend({
   invites: z.array(z.email()),
-  profileAnswers: createIdeaProfileAnswerRqSchema,
+  answers: createIdeaProfileAnswerRqSchema,
 })
 
 export const updateIdeaRqSchema = baseIdeaSchema.extend({
-  profileAnswers: updateIdeaProfileAnswerRqSchema,
+  answers: updateIdeaProfileAnswerRqSchema,
 })
 
 export const ideaSchema = baseIdeaSchema.extend({
@@ -72,11 +72,11 @@ export const ideaSchema = baseIdeaSchema.extend({
   createdById: z.uuid().nullable(),
   createdBy: bareParticipantSchema,
   stage: z.enum(IdeaStageEnum),
-  decision: z.enum(IdeaDecisionEnum),
+  status: z.enum(IdeaStatusEnum),
   ownerId: z.uuid(),
   owner: bareParticipantSchema,
   collaborators: z.array(ideaCollaborationSchema).nullable(),
-  profileAnswers: z.array(ideaProfileAnswerSchema).nullable(),
+  answers: z.array(ideaProfileAnswerSchema).nullable(),
 })
 export const bareIdeaSchema = ideaSchema.pick({ id: true, title: true })
 
@@ -90,7 +90,7 @@ export const fetchIdeaListRsSchema = z.object({
 export const fetchIdeaQySchema = z.object({ ...paginationQySchema.shape, ...sortQySchema.shape }).extend({
   name: z.string().optional(),
   stage: z.enum(IdeaStageEnum).optional(),
-  decision: z.enum(IdeaDecisionEnum).optional(),
+  status: z.enum(IdeaStatusEnum).optional(),
   search: z.string().optional(),
   fromDate: z.coerce.date().optional(),
   toDate: z.coerce.date().optional(),

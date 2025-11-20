@@ -35,11 +35,14 @@ export function AuthenticationProvider(props: { children: ReactNode }) {
       await axiosPrivate
         .get<SessionInfo, AxiosResponse<SessionInfo, TError>>('/participant/me', {
           withCredentials: true,
+          headers: {
+            'Cache-Control': 'no-cache',
+            Pragma: 'no-cache',
+            Expires: '0',
+          },
         })
         .then((user) => {
           setSessionInfo(user.data)
-          // axiosPrivate.defaults.headers.common['X-Tenant-ID'] =
-          //   user.data.tenantId
         })
         .catch((error) => {
           console.error('Error in fetching user profile', error)

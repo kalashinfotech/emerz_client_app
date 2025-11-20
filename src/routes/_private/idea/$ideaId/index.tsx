@@ -4,19 +4,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import type { AxiosError } from 'axios'
 import { format } from 'date-fns'
-import {
-  BadgeCheck,
-  Edit3,
-  HouseIcon,
-  Loader2,
-  NotebookText,
-  PencilOff,
-  Plus,
-  Send,
-  SquircleDashed,
-  Trash2,
-  Users2,
-} from 'lucide-react'
+import { BadgeCheck, Edit3, HouseIcon, NotebookText, PencilOff, SquircleDashed, Users2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import type { TError, UpdateIdeaRqDto } from '@/types'
@@ -24,23 +12,20 @@ import type { TError, UpdateIdeaRqDto } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { BivrPage } from '@/components/blocks/bivr-page'
 import { IdeaStatusStepper } from '@/components/blocks/idea-stage-stepper'
 import { QuestionResource } from '@/components/blocks/question-resource'
 import { Container } from '@/components/elements/container'
-import { AddCollaboratorsModal } from '@/components/modals/add-collaborators'
 import { Confirmation } from '@/components/modals/confirmation'
+import { IdeaCollaboratorTab } from '@/components/tabs/idea-collaborator'
 
-import { UseDeleteCollaborator, UseResendIdeaInvite, UseUpdateIdea, fetchIdeaById } from '@/api/ideas'
+import { UseUpdateIdea, fetchIdeaById } from '@/api/ideas'
 
 import { useAppForm } from '@/hooks/use-app-form'
-import { useAuth } from '@/hooks/use-auth'
 
-import { IdeaStageEnum, updateIdeaRqSchema } from '@/lib/schemas/idea'
+import { IdeaStageEnum, IdeaStatusEnum, updateIdeaRqSchema } from '@/lib/schemas/idea'
 
 type FormMeta = {
   isDraft: boolean
@@ -54,121 +39,18 @@ export const Route = createFileRoute('/_private/idea/$ideaId/')({
   component: RouteComponent,
 })
 
-const CollabHeader = ({ isOwner }: { isOwner: boolean }) => {
-  if (isOwner) {
-    return (
-      <div className="grid grid-cols-3 font-medium">
-        <p>Email</p>
-        <p>Role</p>
-        <p>Invite</p>
-      </div>
-    )
-  } else {
-    return (
-      <div className="grid grid-cols-2 font-medium">
-        <p>Email</p>
-        <p>Role</p>
-      </div>
-    )
-  }
-}
-
-const CollabItem = ({
-  emailId,
-  designation,
-  status,
-  statusVariant,
-  isOwner,
-  resendAction,
-  resendIsActive,
-  resendIsPending,
-  deleteAction,
-  deleteIsActive,
-  deleteIsPending,
-}: {
-  emailId: string
-  designation?: string
-  status: string
-  statusVariant: 'success' | 'destructive' | 'ok' | 'warning'
-  isOwner: boolean
-  resendAction?: () => void
-  resendIsActive?: boolean
-  resendIsPending?: boolean
-  deleteAction?: () => void
-  deleteIsActive?: boolean
-  deleteIsPending?: boolean
-}) => {
-  if (isOwner) {
-    return (
-      <div className="grid grid-cols-3">
-        <p>{emailId}</p>
-        <p>{designation}</p>
-        <div className="flex items-center gap-2">
-          <Badge variant={statusVariant} className="w-40">
-            {status.replaceAll('_', ' ')}
-          </Badge>
-          {designation !== 'Owner' && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="hover:text-destructive h-fit py-0.5 text-xs hover:bg-transparent"
-                  disabled={deleteIsPending}
-                  variant="ghost"
-                  onClick={deleteAction}>
-                  {deleteIsActive ? <Loader2 className="animate-spin" /> : <Trash2 />}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent className="bg-destructive" iconClassName="bg-destructive fill-destructive">
-                Remove
-              </TooltipContent>
-            </Tooltip>
-          )}
-          {designation !== 'Owner' && resendAction && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="h-fit py-0.5 text-xs hover:bg-transparent"
-                  disabled={resendIsPending}
-                  variant="ghost"
-                  onClick={resendAction}>
-                  {resendIsActive ? <Loader2 className="animate-spin" /> : <Send />}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Resend Invite</TooltipContent>
-            </Tooltip>
-          )}
-        </div>
-      </div>
-    )
-  } else {
-    return (
-      <div className="grid grid-cols-2">
-        <p>{emailId}</p>
-        <p>{designation || 'Collaborator'}</p>
-      </div>
-    )
-  }
-}
-
 function RouteComponent() {
-  const { sessionInfo } = useAuth()
-
   const { ideaId } = Route.useParams()
   const { data, refetch } = useSuspenseQuery(fetchIdeaById(ideaId))
   const { updateIdea } = UseUpdateIdea(ideaId)
   const [edit, setEdit] = useState(false)
-  const { isPending, resendInvite } = UseResendIdeaInvite(ideaId)
-  const { isPending: isDeletePending, deleteCollaborator } = UseDeleteCollaborator(ideaId)
-  const [openCollabModal, setOpenCollabModal] = useState(false)
-  const [openConfirm, setOpenConfirm] = useState(false)
-  const [selectedId, setSelectedId] = useState<number | string>()
   const [showConfirmation, setShowConfirmation] = useState(false)
 
   const form = useAppForm({
     defaultValues: {
       title: data.title,
       desc: data.desc,
-      profileAnswers: data.profileAnswers?.map((ans) => ({
+      answers: data.answers?.map((ans) => ({
         id: ans.id,
         questionId: ans.question.id,
         answer: ans.answer,
@@ -199,41 +81,9 @@ function RouteComponent() {
       }
     },
   })
-  const handeDelete = async (collaboratorId: number) => {
-    try {
-      setSelectedId(collaboratorId)
-      await deleteCollaborator({ collaboratorId })
-      toast.success('Success', {
-        description: 'User removed successfully.',
-      })
-      refetch()
-    } catch (error) {
-      const err = error as AxiosError<TError>
-      toast.error('Failed', {
-        description: err.response?.data.error.message || 'Something went wrong! Please try again after sometime.',
-      })
-    } finally {
-      setSelectedId(undefined)
-    }
-  }
-  const handleResendInvite = async (inviteId: number) => {
-    try {
-      setSelectedId(inviteId)
-      await resendInvite({ inviteId })
-      toast.success('Success', {
-        description: 'Invite sent successfully.',
-      })
-    } catch (error) {
-      const err = error as AxiosError<TError>
-      toast.error('Message failed', {
-        description: err.response?.data.error.message || 'Something went wrong! Please try again after sometime.',
-      })
-    } finally {
-      setSelectedId(undefined)
-    }
-  }
-  const isOwner = data.ownerId === sessionInfo?.id
-  const isDraft = data.stage === IdeaStageEnum.DRAFT
+  const isDraft =
+    data.stage === IdeaStageEnum.STAGE_0 ||
+    (data.stage === IdeaStageEnum.STAGE_1 && data.status === IdeaStatusEnum.IN_PROGRESS)
   const totalCollaborators = data.collaborators?.length
   return (
     <>
@@ -255,7 +105,7 @@ function RouteComponent() {
             </TabsTrigger>
             <TabsTrigger
               value="bivr"
-              hidden={data.stage === 'DRAFT'}
+              hidden={data.stage !== 'STAGE_1'}
               className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
               <NotebookText className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
               BIVR
@@ -307,16 +157,16 @@ function RouteComponent() {
                     )}
                   </CardHeader>
                   <CardContent>
-                    <form.AppField name="profileAnswers" mode="array">
+                    <form.AppField name="answers" mode="array">
                       {(field) => {
-                        const [_first, ...rest] = field.state.value
+                        const [...rest] = field.state.value
                         return (
                           <div className="space-y-3">
                             {rest.map((_, aindex) => (
                               <div key={`q-${aindex}`}>
-                                <form.AppField name={`profileAnswers[${aindex}].answer`}>
+                                <form.AppField name={`answers[${aindex}].answer`}>
                                   {(subField) => {
-                                    const question = data.profileAnswers?.[aindex].question
+                                    const question = data.answers?.[aindex].question
                                     return (
                                       <div>
                                         <subField.TextArea
@@ -358,7 +208,7 @@ function RouteComponent() {
                       </p>
                     </div>
                   </CardContent>
-                  {data.stage === 'DRAFT' && (
+                  {isDraft && (
                     <CardFooter className="justify-end gap-4">
                       <form.AppForm>
                         <form.SubscribeButton
@@ -396,70 +246,17 @@ function RouteComponent() {
                   }}
                 />
               </form>
-              <IdeaStatusStepper currentStage={data.stage} />
+              <IdeaStatusStepper currentStage={data.stage} currentStatus={data.status} />
             </div>
           </TabsContent>
           <TabsContent value="collaborators">
-            <Card>
-              <CardHeader>
-                <CardTitle>Idea Partners</CardTitle>
-                {isOwner ? (
-                  <CardDescription>
-                    View existing collaborators, add new ones to your ideas, or remove those who no longer need access.
-                    Use this section to keep your team updated and control who can contribute to your idea.
-                  </CardDescription>
-                ) : (
-                  <CardDescription>View collaborators for the idea.</CardDescription>
-                )}
-              </CardHeader>
-              <CardContent className="text-sm">
-                <div className="space-y-1.5">
-                  <CollabHeader isOwner={isOwner} />
-                  <Separator />
-                  {data.collaborators?.map((collab, index) => {
-                    const variant =
-                      collab.status === 'PENDING' ? 'destructive' : collab.status === 'ACCEPTED_SHADOW' ? 'ok' : 'success'
-                    return (
-                      <CollabItem
-                        key={`collab-${index}`}
-                        emailId={collab.emailId}
-                        designation={collab.designation}
-                        status={collab.status}
-                        statusVariant={variant}
-                        isOwner={isOwner}
-                        resendAction={() => handleResendInvite(collab.id)}
-                        resendIsActive={isPending && selectedId === collab.participant?.id}
-                        resendIsPending={isPending}
-                        deleteAction={() => handeDelete(collab.id)}
-                        deleteIsActive={isDeletePending && selectedId === collab.participant?.id}
-                        deleteIsPending={isDeletePending}
-                      />
-                    )
-                  })}
-                </div>
-              </CardContent>
-              {isOwner && (
-                <CardFooter>
-                  <Button onClick={() => setOpenCollabModal(true)}>
-                    <Plus />
-                    Invite Collaborators
-                  </Button>
-                </CardFooter>
-              )}
-            </Card>
+            <IdeaCollaboratorTab idea={data} refetch={refetch} />
           </TabsContent>
           <TabsContent value="bivr">
             <BivrPage ideaId={ideaId} />
           </TabsContent>
         </Tabs>
       </Container>
-      <AddCollaboratorsModal
-        open={openCollabModal}
-        onOpenChange={setOpenCollabModal}
-        ideaId={data.id}
-        postUpdate={refetch}
-      />
-      <Confirmation open={openConfirm} onOpenChange={setOpenConfirm} loading={isDeletePending} onClick={() => {}} />
     </>
   )
 }
