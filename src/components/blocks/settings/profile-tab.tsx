@@ -18,8 +18,8 @@ import { useAuth } from '@/hooks/use-auth'
 import { updateParticipantRqSchema } from '@/lib/schemas/client'
 
 const ProfileTab = () => {
-  const { setSessionInfo } = useAuth()
-  const { data } = useSuspenseQuery(fetchMyProfile())
+  const { setSessionInfo, sessionInfo } = useAuth()
+  const { data } = useSuspenseQuery(fetchMyProfile(sessionInfo?.id || ''))
   const { data: countries } = useQuery(fetchCountryDropdown(true))
   const { updateMyProfile } = UseUpdateMyProfile()
   const queryClient = useQueryClient()
