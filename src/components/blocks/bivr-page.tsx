@@ -1,6 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
+
+import type { IdeaModel } from '@/types'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -13,13 +15,22 @@ import { BivrGroup } from './bivr-group'
 
 type BivrPageProps = {
   ideaId: string
+  idea: IdeaModel
+  refetch: () => void
 }
-export const BivrPage = ({ ideaId }: BivrPageProps) => {
-  const { data: groups } = useQuery(fetchBivrGroupsList(ideaId))
-  const [activeTab, setActiveTab] = useState('group-1')
+export const BivrPage = ({ ideaId, idea, refetch }: BivrPageProps) => {
+  const { data: groups, isFetched } = useQuery(fetchBivrGroupsList(ideaId))
+  const [activeTab, setActiveTab] = useState(`group-${groups?.[0].id}`)
   const [nextTab, setNextTab] = useState<string>('')
   const [dirtyMap, setDirtyMap] = useState<Record<string, boolean>>({})
   const [showDialog, setShowDialog] = useState(false)
+  const [allErrorsMap, setAllErrorsMap] = useState<Record<string, string>>({})
+  // Load first tab by default
+  useEffect(() => {
+    if (groups && isFetched) {
+      setActiveTab(`group-${groups[0].id}`)
+    }
+  }, [isFetched])
   if (!groups) return <Loader />
   return (
     <>
@@ -39,13 +50,23 @@ export const BivrPage = ({ ideaId }: BivrPageProps) => {
         }}>
         <div className="grow rounded-md text-start">
           {groups.map((group) => (
-            <TabsContent key={`group-${group.id}`} value={`group-${group.id}`} className="">
+            <TabsContent
+              key={`group-${group.id}`}
+              value={`group-${group.id}`}
+              className=""
+              forceMount={true}
+              hidden={activeTab !== `group-${group.id}`}>
               <BivrGroup
+                idea={idea}
                 ideaId={ideaId}
                 groupId={group.id}
                 setIsDirty={(isDirty) => {
                   setDirtyMap((prev) => ({ ...prev, [`group-${group.id}`]: isDirty }))
                 }}
+                setAllErrorsMap={setAllErrorsMap}
+                errorMap={allErrorsMap[group.id]}
+                setActiveTab={setActiveTab}
+                refetchIdea={refetch}
               />
             </TabsContent>
           ))}

@@ -11,6 +11,7 @@ import { Loader } from '@/components/elements/loader'
 
 import { fetchMyIdeasList } from '@/api/ideas'
 
+import { useAuth } from '@/hooks/use-auth'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
 import { Badge } from '../ui/badge'
@@ -20,12 +21,13 @@ type IdeasSearchCommandProps = {
 }
 
 export function IdeasSearchCommand({ onSelect }: IdeasSearchCommandProps) {
+  const { sessionInfo } = useAuth()
   const [open, setOpen] = useState(false)
   const [searchInput, setSearchInput] = useState('')
   const debouncedSearch = useDebouncedSearch(searchInput, 300)
   const columnFilters = debouncedSearch ? [{ id: 'search', value: debouncedSearch }] : []
   const { data, isError, isLoading, error } = useQuery(
-    fetchMyIdeasList(0, columnFilters, [{ id: 'createdAt', desc: true }], 5),
+    fetchMyIdeasList(sessionInfo?.id || '', 0, columnFilters, [{ id: 'createdAt', desc: true }], 5),
   )
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -73,7 +75,7 @@ export function IdeasSearchCommand({ onSelect }: IdeasSearchCommandProps) {
                 {isLoading ? (
                   <Loader />
                 ) : isError ? (
-                  <Error message={error.response?.data.error.message} />
+                  <Error message={error.response?.data.error?.message} />
                 ) : (
                   <>
                     {data?.data.map((item) => {

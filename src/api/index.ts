@@ -14,7 +14,7 @@ export const fetchQuery = <T>(endpoint: string, opts: FetchQueryOptions) => {
   return queryOptions({
     queryKey,
     queryFn: async (): Promise<T> => {
-      const response = await axiosPrivate.get(endpoint, params)
+      const response = await axiosPrivate.get(endpoint, { params })
       return response.data
     },
     enabled,

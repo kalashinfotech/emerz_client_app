@@ -14,27 +14,47 @@ const steps = [
     title: 'Draft',
     description: 'Idea is being drafted and can be edited before submission.',
     Icon: FileEdit,
+    statuses: {
+      IN_PROGRESS: 'The idea is being drafted or updated before its first submission.',
+    },
   },
   {
     key: 'STAGE_1' as IdeaStage,
     title: 'Pre-Validation',
     description: 'Idea is submitted for initial review before moving forward.',
     Icon: SearchCheck,
+    statuses: {
+      PENDING: 'The idea has been submitted and is awaiting preliminary review.',
+      IN_REVIEW: 'The idea is under reconsideration after being rejected, awaiting evaluator review.',
+      REJECTED: 'The idea has been reviewed and rejected at the preliminary evaluation stage.',
+    },
   },
   {
     key: 'STAGE_2' as IdeaStage,
     title: 'Readiness',
     description: 'Idea is being checked for completeness and feasibility.',
     Icon: ClipboardCheck,
+    statuses: {
+      IN_PROGRESS: 'The idea is being refined, and the second questionnaire set must be completed before coach review.',
+      PENDING: 'The idea has been submitted and is waiting for business-coach assignment or evaluation.',
+      COACH_PENDING: 'A business coach has been assigned and must accept or reject the idea.',
+      COACH_REVIEW: 'The assigned business coach is reviewing and evaluating the idea.',
+    },
   },
   {
     key: 'STAGE_3' as IdeaStage,
     title: 'Validation',
     description: 'Idea undergoes final validation before completion.',
     Icon: ShieldCheck,
+    statuses: {
+      IN_PROGRESS: 'The idea is being improved during the final development phase before final submission.',
+      PENDING: 'The idea has been submitted and is awaiting final coach assignment.',
+      COACH_PENDING: 'A coach has been assigned and must accept or reject the idea in the final stage.',
+      COACH_REVIEW: 'The coach is reviewing the idea in the final stage before completion.',
+      COMPLETED: 'The idea has been fully reviewed, rated, and marked as completed.',
+    },
   },
 ]
-
 type Props = {
   /** Current stage key (highlights this step and all previous as completed) */
   currentStage?: IdeaStageEnum
@@ -60,7 +80,7 @@ export function IdeaStatusStepper({
   const currentIndex = steps.findIndex((s) => s.key === currentStage)
 
   return (
-    <ol className={`relative pl-8 ${className}`}>
+    <ol className={`relative ${className}`}>
       {steps.map((s, idx) => {
         const isCompleted = idx < currentIndex
         const isActive = idx === currentIndex
@@ -110,7 +130,9 @@ export function IdeaStatusStepper({
                   )}
                 </div>
 
-                {!compact && <p className="text-muted-foreground mt-1 text-xs">{s.description}</p>}
+                {!compact && (
+                  <p className="text-muted-foreground mt-1 text-xs">{s.statuses[currentStatus] || s.description}</p>
+                )}
               </div>
             </div>
           </li>

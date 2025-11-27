@@ -1,7 +1,7 @@
 import React from 'react'
 
 import type { AxiosError } from 'axios'
-import { Plus, X } from 'lucide-react'
+import { Mail, X } from 'lucide-react'
 import { toast } from 'sonner'
 
 import type { CreateIdeaInvitesRqDto, TError } from '@/types'
@@ -20,6 +20,8 @@ import { UseCreateIdeaInvites } from '@/api/ideas'
 import { useAppForm } from '@/hooks/use-app-form'
 
 import { createIdeaInvitesRqSchema } from '@/lib/schemas/idea'
+
+import { Button } from '../ui/button'
 
 type AddCollaboratorsModalProps = {
   ideaId: string
@@ -52,7 +54,7 @@ export const AddCollaboratorsModal: React.FC<AddCollaboratorsModalProps> = ({
       } catch (error) {
         const err = error as AxiosError<TError>
         toast.error('Message failed', {
-          description: err.response?.data.error.message || 'Something went wrong! Please try again after sometime.',
+          description: err.response?.data.error?.message || 'Something went wrong! Please try again after sometime.',
         })
       }
     },
@@ -79,16 +81,17 @@ export const AddCollaboratorsModal: React.FC<AddCollaboratorsModalProps> = ({
               {(field) => (
                 <field.Tags
                   placeholder="john.smith@example.com"
-                  note="Type or paste in emails below, separated by commas"
+                  note="Type or paste in emails below, separated by commas or enter."
                 />
               )}
             </form.AppField>
             <div className="mt-3 flex items-center justify-end gap-2">
+              <Button variant="cancel" onClick={() => onOpenChange(false)}>
+                <X />
+                Close
+              </Button>
               <form.AppForm>
-                <form.ResetButton icon={X} />
-              </form.AppForm>
-              <form.AppForm>
-                <form.SubscribeButton label="Add to idea" icon={Plus} />
+                <form.SubscribeButton label="Send Invite" icon={Mail} />
               </form.AppForm>
             </div>
           </form>

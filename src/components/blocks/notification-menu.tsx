@@ -1,45 +1,35 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
+import { useQuery } from '@tanstack/react-query'
 import { BellIcon } from 'lucide-react'
+
+import type { BareParticipantModel } from '@/types'
+import type { BareUserAccountModel } from '@/types/user-account'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
-const initialNotifications = [
-  {
-    id: 1,
-    user: 'Bramhan Jain',
-    action: 'accepted your collaboration',
-    target: 'request',
-    timestamp: '12 hours ago',
-    unread: true,
-  },
-  {
-    id: 2,
-    user: 'Bramhan Jain',
-    action: 'updated the answer for',
-    target: 'Idea Lorem Text Generator',
-    timestamp: '45 minutes ago',
-    unread: true,
-  },
-  {
-    id: 3,
-    user: 'You',
-    action: 'sent collaboration request to',
-    target: 'darshan.jain@gmail.com',
-    timestamp: '4 hours ago',
-    unread: false,
-  },
-  {
-    id: 4,
-    user: 'Your',
-    action: 'idea status has changed from Draft to',
-    target: 'In Progress',
-    timestamp: '12 hours ago',
-    unread: false,
-  },
-]
+import { fetchMyNotificationList } from '@/api/participant'
+
+import { useAuth } from '@/hooks/use-auth'
+
+function getSenderName(sender: BareParticipantModel | BareUserAccountModel | null) {
+  if (!sender) return 'System'
+  return sender.fullName
+}
+
+function timeAgo(dateLike: string | Date) {
+  const date = typeof dateLike === 'string' ? new Date(dateLike) : dateLike
+  const now = new Date()
+  const diff = Math.floor((now.getTime() - date.getTime()) / 1000) // seconds
+
+  if (diff < 60) return `${diff}s ago`
+  if (diff < 3600) return `${Math.floor(diff / 60)} minutes ago`
+  if (diff < 86400) return `${Math.floor(diff / 3600)} hours ago`
+  if (diff < 60 * 86400) return `${Math.floor(diff / 86400)} days ago`
+  return date.toLocaleDateString()
+}
 
 function Dot({ className }: { className?: string }) {
   return (
@@ -56,23 +46,73 @@ function Dot({ className }: { className?: string }) {
   )
 }
 
+type BackendNotification = {
+  id: number
+  unread: boolean
+  createdAt: string | Date
+  sender?: any | null
+  notification?: string | null
+  action?: string | null
+  target?: string | null
+  link?: string | null
+  type: string
+}
+
 export function NotificationMenu() {
-  const [notifications, setNotifications] = useState(initialNotifications)
+  const { sessionInfo } = useAuth()
+
+  const {
+    data: rawResp,
+    isLoading,
+    isError,
+    error,
+  } = useQuery(
+    fetchMyNotificationList(sessionInfo?.id || '', 0, [], [{ id: 'createdAt', desc: true }], 10, !!sessionInfo?.id),
+  )
+
+  const backendNotifications: BackendNotification[] = useMemo(() => {
+    if (!rawResp?.data) return []
+    return rawResp.data.map((n: any) => ({
+      id: n.id,
+      unread: !!n.unread,
+      createdAt: n.createdAt,
+      sender: n.sender ?? null,
+      notification: n.notification ?? null,
+      action: n.action ?? null,
+      target: n.target ?? null,
+      link: n.link ?? null,
+      meta: n.meta ?? null,
+      type: n.type,
+    }))
+  }, [rawResp])
+
+  const [notifications, setNotifications] = useState<BackendNotification[]>([])
+
+  useEffect(() => {
+    setNotifications(backendNotifications)
+  }, [rawResp, backendNotifications])
+
   const unreadCount = notifications.filter((n) => n.unread).length
 
-  const handleMarkAllAsRead = () => {
-    setNotifications(
-      notifications.map((notification) => ({
-        ...notification,
-        unread: false,
-      })),
-    )
+  const handleMarkAllAsRead = async () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, unread: false })))
+
+    // TODO: call your backend mark-all-read endpoint here, e.g.:
+    // await markAllNotificationsRead(sessionInfo.id)
+    // If the backend call fails, you might want to revert or show an error toast.
   }
 
-  const handleNotificationClick = (id: number) => {
-    setNotifications(
-      notifications.map((notification) => (notification.id === id ? { ...notification, unread: false } : notification)),
-    )
+  const handleNotificationClick = async (id: number) => {
+    const clicked = notifications.find((n) => n.id === id)
+    if (!clicked) return
+    setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)))
+    if (clicked.link) {
+      window.location.href = clicked.link
+    }
+
+    // TODO: call your backend to mark this notification as read:
+    // await markNotificationRead(id)
+    // handle errors if needed
   }
 
   return (
@@ -87,6 +127,7 @@ export function NotificationMenu() {
           )}
         </Button>
       </PopoverTrigger>
+
       <PopoverContent className="w-80 p-1">
         <div className="flex items-baseline justify-between gap-4 px-3 py-2">
           <div className="text-sm font-semibold">Notifications</div>
@@ -96,29 +137,60 @@ export function NotificationMenu() {
             </button>
           )}
         </div>
+
         <div role="separator" aria-orientation="horizontal" className="bg-border -mx-1 my-1 h-px"></div>
-        {notifications.map((notification) => (
-          <div key={notification.id} className="hover:bg-accent rounded-md px-3 py-2 text-sm transition-colors">
-            <div className="relative flex items-start pe-3">
-              <div className="flex-1 space-y-1">
-                <button
-                  className="text-foreground/80 text-left after:absolute after:inset-0"
-                  onClick={() => handleNotificationClick(notification.id)}>
-                  <span className="text-foreground font-medium hover:underline">{notification.user}</span>{' '}
-                  {notification.action}{' '}
-                  <span className="text-foreground font-medium hover:underline">{notification.target}</span>.
-                </button>
-                <div className="text-muted-foreground text-xs">{notification.timestamp}</div>
-              </div>
-              {notification.unread && (
-                <div className="absolute end-0 self-center">
-                  <span className="sr-only">Unread</span>
-                  <Dot />
-                </div>
-              )}
-            </div>
+
+        {isLoading && <div className="text-muted-foreground px-3 py-2 text-sm">Loading...</div>}
+
+        {isError && (
+          <div className="text-destructive px-3 py-2 text-sm">
+            Failed to load notifications. {(error as any)?.message}
           </div>
-        ))}
+        )}
+
+        {!isLoading && notifications.length === 0 && (
+          <div className="text-muted-foreground px-3 py-4 text-sm">No notifications</div>
+        )}
+
+        {notifications.map((notification) => {
+          const senderName = getSenderName(notification.sender)
+
+          return (
+            <div
+              key={notification.id}
+              className="hover:bg-accent rounded-md px-3 py-2 text-sm transition-colors"
+              role="button"
+              onClick={() => handleNotificationClick(notification.id)}>
+              <div className="relative flex items-start pe-3">
+                <div className="flex-1 space-y-1">
+                  <div className="text-foreground/80 text-left">
+                    <span className="text-foreground font-medium">{senderName}</span>{' '}
+                    {notification.notification && <span>{notification.notification}</span>}
+                    {notification.target && <span className="font-semibold"> {notification.target}</span>}
+                  </div>
+                  <div className="text-muted-foreground text-xs">{timeAgo(notification.createdAt)}</div>
+                  {notification.type === 'invite' && (
+                    <div className="mt-2 flex items-center gap-1">
+                      <Button size="sm" variant="default">
+                        Accept
+                      </Button>
+                      <Button size="sm" variant="destructive">
+                        Reject
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {notification.unread && (
+                  <div className="absolute end-0 self-center">
+                    <span className="sr-only">Unread</span>
+                    <Dot />
+                  </div>
+                )}
+              </div>
+            </div>
+          )
+        })}
       </PopoverContent>
     </Popover>
   )

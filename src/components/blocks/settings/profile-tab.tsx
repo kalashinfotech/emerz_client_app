@@ -42,7 +42,7 @@ const ProfileTab = () => {
       } catch (error) {
         const err = error as AxiosError<TError>
         toast.error(
-          err.response?.data.error.message || 'Something went wrong. Please contact administrator or try again later.',
+          err.response?.data.error?.message || 'Something went wrong. Please contact administrator or try again later.',
         )
       }
     },
@@ -50,20 +50,15 @@ const ProfileTab = () => {
   const countryId = useStore(form.store, (state) => state.values.countryId)
   const stateId = useStore(form.store, (state) => state.values.stateId)
   const { data: states } = useQuery(fetchStateDropdown(Number(countryId), !!countryId))
-  const handleAvatarComplete = (file: File, objectUrl: string) => {
-    console.log('Cropped file:', file, typeof file)
-    console.log('Preview URL:', objectUrl, typeof objectUrl)
-
-    // // Example: upload file to backend
-    // const formData = new FormData()
-    // formData.append('avatar', file)
+  const handleAvatarComplete = (file: File) => {
     form.setFieldValue('profilePicture', file)
-    // fetch("/api/upload-avatar", { method: "POST", body: formData })
   }
 
   const handleAvatarRemove = () => {
     console.log('Avatar removed')
   }
+
+  console.log(form.state.errors)
 
   return (
     <form

@@ -83,7 +83,7 @@ export function AuthenticationProvider(props: { children: ReactNode }) {
       if (isAxiosError(error)) {
         if (error.response) {
           const err = error as AxiosError<TError>
-          return { status: -1, error: err.response?.data.error.message }
+          return { status: -1, error: err.response?.data.error?.message }
         } else if (error.request) {
           return {
             status: -1,
@@ -113,7 +113,7 @@ export function AuthenticationProvider(props: { children: ReactNode }) {
       if (isAxiosError(error)) {
         if (error.response) {
           const err = error as AxiosError<TError>
-          return { status: -1, error: err.response?.data.error.message }
+          return { status: -1, error: err.response?.data.error?.message }
         } else if (error.request) {
           return {
             status: -1,

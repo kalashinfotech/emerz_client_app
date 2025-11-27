@@ -30,7 +30,11 @@ export const CollaboratorStatus = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',
   ACCEPTED_SHADOW: 'ACCEPTED_SHADOW',
+  REJECTED: 'REJECTED',
+  DELETED: 'DELETED',
 } as const
+
+export type CollaboratorStatus = (typeof CollaboratorStatus)[keyof typeof CollaboratorStatus]
 
 const baseIdeaCollaborationSchema = z.object({
   designation: z.string().optional(),

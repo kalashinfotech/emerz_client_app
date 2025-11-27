@@ -30,7 +30,7 @@ export const ChangePasswordTab = () => {
       } catch (error) {
         const err = error as AxiosError<TError>
         toast.error(
-          err.response?.data.error.message || 'There was an error in updating password. Please try after sometime.',
+          err.response?.data.error?.message || 'There was an error in updating password. Please try after sometime.',
         )
       }
     },

@@ -1,6 +1,8 @@
 import { useMutation } from '@tanstack/react-query'
+import type { ColumnFilter, ColumnSort } from '@tanstack/react-table'
 
 import type { FetchParticipantRsDto, UpdateParticipantRqDto, UpdateParticipantRsDto } from '@/types'
+import type { FetchInAppNotificationRsDto } from '@/types/in-app-notification'
 
 import { fetchQuery } from '.'
 import { axiosPrivate } from './axios'
@@ -12,6 +14,29 @@ const queryKey = ['participant']
 export const fetchMyProfile = (id: string, enabled: boolean = true) => {
   const endpoint = `${baseSuburl}/me`
   return fetchQuery<FetchParticipantRsDto>(endpoint, { queryKey: [...queryKey, id, 'profile'], enabled })
+}
+
+// NOTE: passing id to avoid caching issues
+export const fetchMyNotificationList = (
+  participantId: string,
+  page: number,
+  columnFilters: ColumnFilter[],
+  sorting: ColumnSort[],
+  pageSize: number = 10,
+  enabled: boolean = true,
+) => {
+  const filters = columnFilters.reduce<Record<string, string>>((acc, obj) => {
+    acc[obj.id] = obj.value as string
+    return acc
+  }, {})
+
+  const endpoint = `${baseSuburl}/me/notification`
+  const params = { page, pageSize, ...filters, sorting }
+  return fetchQuery<FetchInAppNotificationRsDto>(endpoint, {
+    queryKey: [...queryKey, 'notification', participantId, page, columnFilters, sorting, pageSize],
+    enabled,
+    params,
+  })
 }
 
 export const UseUpdateMyProfile = () => {

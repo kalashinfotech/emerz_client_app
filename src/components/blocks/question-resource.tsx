@@ -1,6 +1,13 @@
 import { Info } from 'lucide-react'
 
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 import { Button } from '../ui/button'
 
@@ -15,20 +22,24 @@ type QuestionResourceProps = {
 
 const QuestionResource = ({ question }: QuestionResourceProps) => {
   return (
-    <Popover>
-      <PopoverTrigger asChild>
+    <Dialog>
+      <DialogTrigger asChild>
         <Button variant="ghost" size="icon">
           <Info />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-140 px-6 text-xs">
-        <ul className="list-disc space-y-2">
+      </DialogTrigger>
+      <DialogContent className="w-140 px-6 text-sm">
+        <DialogHeader>
+          <DialogTitle className="text-sm">Information</DialogTitle>
+          <DialogDescription className="text-sm">{question.name}</DialogDescription>
+        </DialogHeader>
+        <ul className="list-disc space-y-2 text-xs">
           <li>{question.desc}</li>
           <li>Minimum response length {question.minLength} characters</li>
           <li>Maximum response length {question.maxLength} characters</li>
         </ul>
-      </PopoverContent>
-    </Popover>
+      </DialogContent>
+    </Dialog>
   )
 }
 

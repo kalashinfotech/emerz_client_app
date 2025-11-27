@@ -35,7 +35,7 @@ const AccountTab = () => {
       } catch (error) {
         const err = error as AxiosError<TError>
         toast.error(
-          err.response?.data.error.message || 'Something went wrong. Please contact administrator or try again later.',
+          err.response?.data.error?.message || 'Something went wrong. Please contact administrator or try again later.',
         )
       }
     },

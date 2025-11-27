@@ -16,12 +16,11 @@ import { Badge } from '../ui/badge'
 import { Button } from '../ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { Separator } from '../ui/separator'
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 
 const CollabHeader = ({ isOwner }: { isOwner: boolean }) => {
   if (isOwner) {
     return (
-      <div className="grid grid-cols-3 font-medium">
+      <div className="grid grid-cols-4 font-medium">
         <p>Email</p>
         <p>Role</p>
         <p>Invite</p>
@@ -64,42 +63,32 @@ const CollabItem = ({
 }) => {
   if (isOwner) {
     return (
-      <div className="grid grid-cols-3">
+      <div className="grid grid-cols-4">
         <p>{emailId}</p>
         <p>{designation}</p>
         <div className="flex items-center gap-2">
           <Badge variant={statusVariant} className="w-40">
             {status.replaceAll('_', ' ')}
           </Badge>
+        </div>
+        <div className="flex items-center gap-2">
           {designation !== 'Owner' && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="hover:text-destructive h-fit py-0.5 text-xs hover:bg-transparent"
-                  disabled={deleteIsPending}
-                  variant="ghost"
-                  onClick={deleteAction}>
-                  {deleteIsActive ? <Loader2 className="animate-spin" /> : <Trash2 />}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent className="bg-destructive" iconClassName="bg-destructive fill-destructive">
-                Remove
-              </TooltipContent>
-            </Tooltip>
+            <Button
+              className="hover:text-destructive h-fit py-0.5 text-xs hover:bg-transparent"
+              disabled={deleteIsPending || !(status === 'PENDING' || status === 'ACCEPTED')}
+              variant="ghost"
+              onClick={deleteAction}>
+              {deleteIsActive ? <Loader2 className="animate-spin" /> : <Trash2 />} Remove
+            </Button>
           )}
           {designation !== 'Owner' && resendAction && (
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  className="h-fit py-0.5 text-xs hover:bg-transparent"
-                  disabled={resendIsPending}
-                  variant="ghost"
-                  onClick={resendAction}>
-                  {resendIsActive ? <Loader2 className="animate-spin" /> : <Send />}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Resend Invite</TooltipContent>
-            </Tooltip>
+            <Button
+              className="h-fit py-0.5 text-xs hover:bg-transparent"
+              disabled={resendIsPending || !(status === 'PENDING' || status === 'ACCEPTED')}
+              variant="ghost"
+              onClick={resendAction}>
+              {resendIsActive ? <Loader2 className="animate-spin" /> : <Send />} Resend
+            </Button>
           )}
         </div>
       </div>
@@ -137,7 +126,7 @@ const IdeaCollaboratorTab = ({ idea, refetch }: IdeaCollaboratorTabProps) => {
     } catch (error) {
       const err = error as AxiosError<TError>
       toast.error('Failed', {
-        description: err.response?.data.error.message || 'Something went wrong! Please try again after sometime.',
+        description: err.response?.data.error?.message || 'Something went wrong! Please try again after sometime.',
       })
     } finally {
       setSelectedId(undefined)
@@ -153,7 +142,7 @@ const IdeaCollaboratorTab = ({ idea, refetch }: IdeaCollaboratorTabProps) => {
     } catch (error) {
       const err = error as AxiosError<TError>
       toast.error('Message failed', {
-        description: err.response?.data.error.message || 'Something went wrong! Please try again after sometime.',
+        description: err.response?.data.error?.message || 'Something went wrong! Please try again after sometime.',
       })
     } finally {
       setSelectedId(undefined)
@@ -180,7 +169,15 @@ const IdeaCollaboratorTab = ({ idea, refetch }: IdeaCollaboratorTabProps) => {
             <Separator />
             {idea.collaborators?.map((collab, index) => {
               const variant =
-                collab.status === 'PENDING' ? 'destructive' : collab.status === 'ACCEPTED_SHADOW' ? 'ok' : 'success'
+                collab.status === 'PENDING'
+                  ? 'warning'
+                  : collab.status === 'ACCEPTED_SHADOW'
+                    ? 'ok'
+                    : collab.status === 'DELETED'
+                      ? 'destructive'
+                      : collab.status === 'REJECTED'
+                        ? 'destructive'
+                        : 'success'
               return (
                 <CollabItem
                   key={`collab-${index}`}

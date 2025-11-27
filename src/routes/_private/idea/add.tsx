@@ -70,7 +70,7 @@ function RouteComponent() {
         router.navigate({ to: '/idea/$ideaId', params: { ideaId: id.toString() } })
       } catch (error) {
         const err = error as AxiosError<TError>
-        toast.error(err.response?.data.error.message)
+        toast.error(err.response?.data.error?.message || 'Something went wrong. Please contact support.')
       }
     },
   })
@@ -90,7 +90,7 @@ function RouteComponent() {
         const key = `answers[0].answer`
         const firstErr = formErrors[0]
         let er = false
-        if (titleMeta.errors.length) {
+        if (titleMeta?.errors.length) {
           form.validateField('title', 'submit')
           er = true
         }

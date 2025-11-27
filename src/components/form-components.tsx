@@ -262,7 +262,7 @@ export function TextArea({
         onChange={(e) => field.handleChange(e.target.value)}
         {...props}
       />
-      {note && <p className="text-muted-foreground text-xs">{note}</p>}
+      {note && <p className="text-muted-foreground text-sm">{note}</p>}
       {field.state.meta.isTouched && <ErrorMessages errors={errors} />}
     </div>
   )
@@ -451,7 +451,7 @@ export function Tags({ label, placeholder, note }: { label?: string; placeholder
             {label}
           </Label>
         )}
-        {note && <p className="text-muted-foreground mb-2 text-xs">{note}</p>}
+        {note && <p className="text-muted-foreground mb-2 text-sm">{note}</p>}
         <TagsInput id={label} setInputTags={field.handleChange} inputTags={field.state.value} placeholder={placeholder} />
       </div>
       {field.state.meta.isTouched && <ErrorMessages errors={fieldErrors.length > 0 ? fieldErrors : updatedErrors} />}

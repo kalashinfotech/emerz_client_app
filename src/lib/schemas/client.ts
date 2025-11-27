@@ -87,7 +87,7 @@ export const fetchParticipantRsSchema = participantSchema.extend({
 
 export const updateParticipantRqSchema = baseParticipantSchema.extend({
   profilePicture: z.file().optional(),
-  googleId: z.string().optional(),
+  googleId: z.string().nullable().optional(),
 })
 
 export const updateParticipantRsSchema = fetchParticipantRsSchema

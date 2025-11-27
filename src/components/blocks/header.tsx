@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
-import { Link, useCanGoBack, useNavigate, useRouter } from '@tanstack/react-router'
-import { ChevronLeftIcon, CircleX, IdCardLanyard, LogOut, MenuIcon, Settings, User } from 'lucide-react'
+import { Link, useNavigate, useRouter } from '@tanstack/react-router'
+import { CircleX, IdCardLanyard, LogOut, MenuIcon, Settings, User } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -19,7 +19,7 @@ import { Loader } from '@/components/elements/loader'
 import { useAuth } from '@/hooks/use-auth'
 
 import { IdeasSearchCommand } from '../elements/idea-search-menu'
-import { SidebarTrigger } from '../ui/sidebar'
+import { SidebarTrigger, SidebarTriggerMobile } from '../ui/sidebar'
 import { NotificationMenu } from './notification-menu'
 
 // import { ThemeToggle } from './theme-toggle'
@@ -28,7 +28,6 @@ const Header = () => {
   const { signOut, sessionInfo, authInitialized } = useAuth()
   const [open, setOpen] = useState<boolean>(false)
   const router = useRouter()
-  const canGoBack = useCanGoBack()
   const navigate = useNavigate()
   useEffect(() => {
     if (open) {
@@ -74,7 +73,7 @@ const Header = () => {
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="bg-popover flex w-[200px] flex-col text-sm backdrop-blur-sm">
+            <DropdownMenuContent className="bg-popover flex min-w-[200px] flex-col text-sm backdrop-blur-sm">
               <DropdownMenuItem className="pointer-events-none">
                 <User />
                 <div>
@@ -119,15 +118,11 @@ const Header = () => {
         </div>
       </header>
       <header className="flex h-16 items-center justify-between px-4 md:hidden">
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={!canGoBack}
-          onClick={() => {
-            if (canGoBack) router.history.back()
-          }}>
-          <ChevronLeftIcon className="size-7" />
-        </Button>
+        <div className="flex items-center gap-4">
+          <div className="py-4">
+            <SidebarTriggerMobile className="size-8" size="icon" variant="ghost" />
+          </div>
+        </div>
         <Button variant="ghost" size="icon" onClick={() => setOpen(true)}>
           <MenuIcon className="size-7" />
         </Button>

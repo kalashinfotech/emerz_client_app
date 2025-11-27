@@ -1,6 +1,7 @@
 import type { z } from 'zod/v4'
 
 import type {
+  bareParticipantSchema,
   createParticipantRqSchema,
   fetchParticipantRsSchema,
   updateParticipantRqSchema,
@@ -11,3 +12,4 @@ export type CreateParticipantRqDto = z.infer<typeof createParticipantRqSchema>
 export type UpdateParticipantRqDto = z.infer<typeof updateParticipantRqSchema>
 export type FetchParticipantRsDto = z.infer<typeof fetchParticipantRsSchema>
 export type UpdateParticipantRsDto = z.infer<typeof updateParticipantRsSchema>
+export type BareParticipantModel = z.infer<typeof bareParticipantSchema>

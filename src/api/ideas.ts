@@ -17,6 +17,7 @@ const baseSuburl = '/ideas'
 const queryKey = ['ideas']
 
 export const fetchMyIdeasList = (
+  participantId: string,
   page: number,
   columnFilters: ColumnFilter[],
   sorting: ColumnSort[],
@@ -31,7 +32,7 @@ export const fetchMyIdeasList = (
   const endpoint = `${baseSuburl}/list`
   const params = { page, pageSize, ...filters, sorting }
   return fetchQuery<FetchMyIdeaListRsDto>(endpoint, {
-    queryKey: [...queryKey, 'list', page, columnFilters, sorting, pageSize],
+    queryKey: [...queryKey, 'list', participantId, page, columnFilters, sorting, pageSize],
     enabled,
     params,
   })

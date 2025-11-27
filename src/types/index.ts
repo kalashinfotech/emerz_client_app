@@ -2,10 +2,11 @@ export type TError = {
   statusCode: number
   timestamp: string
   path: string
-  error: {
+  error?: {
     message: string
     error: string
     statusCode: number
+    info: any
   }
 }
 

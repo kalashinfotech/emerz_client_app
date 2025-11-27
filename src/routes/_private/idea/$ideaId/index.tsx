@@ -76,7 +76,7 @@ function RouteComponent() {
       } catch (error) {
         const err = error as AxiosError<TError>
         toast.error(
-          err.response?.data.error.message || 'Something went wrong. Please contact administrator or try again later.',
+          err.response?.data.error?.message || 'Something went wrong. Please contact administrator or try again later.',
         )
       }
     },
@@ -105,16 +105,16 @@ function RouteComponent() {
             </TabsTrigger>
             <TabsTrigger
               value="bivr"
-              hidden={data.stage !== 'STAGE_1'}
+              hidden={data.stage !== 'STAGE_2'}
               className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
               <NotebookText className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
               BIVR
             </TabsTrigger>
           </TabsList>
           <TabsContent value="overview">
-            <div className="flex h-fit gap-4">
+            <div className="flex h-fit flex-col-reverse gap-4 md:flex-row md:gap-4">
               <form
-                className="w-[80%]"
+                className="md:w-[80%]"
                 onSubmit={(e) => {
                   e.preventDefault()
                   e.stopPropagation()
@@ -246,14 +246,14 @@ function RouteComponent() {
                   }}
                 />
               </form>
-              <IdeaStatusStepper currentStage={data.stage} currentStatus={data.status} />
+              <IdeaStatusStepper currentStage={data.stage} currentStatus={data.status} className="max-w-80" />
             </div>
           </TabsContent>
           <TabsContent value="collaborators">
             <IdeaCollaboratorTab idea={data} refetch={refetch} />
           </TabsContent>
           <TabsContent value="bivr">
-            <BivrPage ideaId={ideaId} />
+            <BivrPage ideaId={ideaId} idea={data} refetch={refetch} />
           </TabsContent>
         </Tabs>
       </Container>

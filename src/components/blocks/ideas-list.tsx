@@ -6,13 +6,17 @@ import { Spinner } from '@/components/ui/spinner'
 
 import { fetchMyIdeasList } from '@/api/ideas'
 
+import { useAuth } from '@/hooks/use-auth'
+
 import { cn } from '@/lib/utils'
 
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '../ui/sidebar'
 
 export const IdeasList = () => {
+  const { sessionInfo } = useAuth()
   const { data, isLoading, isError } = useQuery(
     fetchMyIdeasList(
+      sessionInfo?.id || '',
       0,
       [],
       [
