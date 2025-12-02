@@ -277,7 +277,7 @@ function RouteComponent() {
           </CardFooter>
         </Card>
         {profileIncomplete && (
-          <div className="mt-4">
+          <div className="mt-4 w-full md:w-[700px]">
             <Alert variant="destructive">
               <CircleAlertIcon />
               <AlertTitle>

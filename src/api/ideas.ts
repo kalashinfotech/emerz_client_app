@@ -4,6 +4,7 @@ import type { ColumnFilter, ColumnSort } from '@tanstack/react-table'
 import type {
   CreateIdeaInvitesRqDto,
   CreateIdeaRqDto,
+  FetchIdeaActivityRsDto,
   FetchIdeaRsDto,
   FetchMyIdeaListRsDto,
   IdRs,
@@ -132,4 +133,9 @@ export const UseDeleteCollaborator = (ideaId: string) => {
     },
   })
   return { deleteCollaborator, reset, isPending, isError, error, isSuccess }
+}
+
+export const fetchIdeaActivityByIdeaId = (ideaId: string, enabled: boolean = true) => {
+  const endpoint = `${baseSuburl}/${ideaId}/activity`
+  return fetchQuery<FetchIdeaActivityRsDto>(endpoint, { queryKey: [...queryKey, 'activity', ideaId], enabled })
 }

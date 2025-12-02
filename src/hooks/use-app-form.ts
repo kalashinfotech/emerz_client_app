@@ -3,7 +3,9 @@ import { createFormHook } from '@tanstack/react-form'
 import {
   Checkbox,
   DateField,
+  FloatingPasswordField,
   FloatingTextField,
+  PasswordField,
   ResetButton,
   Select,
   SubscribeButton,
@@ -24,6 +26,8 @@ export const { useAppForm, withForm } = createFormHook({
     Checkbox,
     Tags,
     DateField,
+    PasswordField,
+    FloatingPasswordField,
   },
   formComponents: {
     SubscribeButton,

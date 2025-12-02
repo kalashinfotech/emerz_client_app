@@ -6,7 +6,6 @@ export const signInRqSchema = z.object({
   emailId: z.email(),
   password: z.string(),
   rememberMe: z.boolean(),
-  showPassword: z.boolean().default(false).optional(),
 })
 
 export const changePasswordRqSchema = z.object({

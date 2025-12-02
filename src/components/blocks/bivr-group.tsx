@@ -13,7 +13,7 @@ import { UseCreateBivrAnswers, fetchIdeaBivrGroupById } from '@/api/idea-bivr'
 
 import { useAppForm } from '@/hooks/use-app-form'
 
-import { IdeaStageEnum, IdeaStatusEnum } from '@/lib/schemas/idea'
+import { IdeaStageEnum, IdeaStatusEnum } from '@/lib/enums'
 import { createBivrAnswersRqSchema } from '@/lib/schemas/idea-bivr'
 
 import { Loader } from '../elements/loader'

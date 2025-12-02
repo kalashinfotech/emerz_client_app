@@ -2,7 +2,7 @@ import React from 'react'
 
 import { ClipboardCheck, FileEdit, SearchCheck, ShieldCheck } from 'lucide-react'
 
-import type { IdeaStageEnum, IdeaStatusEnum } from '@/lib/schemas/idea'
+import type { IdeaStageEnum, IdeaStatusEnum } from '@/lib/enums'
 import { titleCase } from '@/lib/text-utils'
 
 // Keep stage names in sync with your backend enum

@@ -38,7 +38,6 @@ function RouteComponent() {
       emailId: '',
       password: '',
       rememberMe: false,
-      showPassword: false,
     } as SignInRq,
     validators: {
       onSubmit: signInRqSchema,
@@ -62,7 +61,7 @@ function RouteComponent() {
           <CardTitle className="flex items-center gap-1 text-base font-normal md:text-xl">
             <span>Welcome</span>
             <span>to</span>
-            <img src="/logo-full.png" className="w-[80px]" />
+            <img src="/logo-full.png" className="w-20" />
           </CardTitle>
           <CardDescription className="text-xs">Please enter your login details.</CardDescription>
         </CardHeader>
@@ -79,14 +78,9 @@ function RouteComponent() {
                   <field.FloatingTextField label="Email ID" placeholder="Enter your email" autoComplete="username" />
                 )}
               </form.AppField>
-              <form.AppField
-                name="password"
-                validators={{
-                  onChangeListenTo: ['showPassword'],
-                }}>
+              <form.AppField name="password">
                 {(field) => (
-                  <field.FloatingTextField
-                    type={form.getFieldValue('showPassword') ? 'text' : 'password'}
+                  <field.FloatingPasswordField
                     label="Password"
                     placeholder="Enter your password"
                     autoComplete="current-password"
@@ -94,13 +88,6 @@ function RouteComponent() {
                 )}
               </form.AppField>
               <div className="mt-0 flex flex-col gap-4 text-xs md:flex-row md:items-center md:justify-between">
-                <form.AppField name="showPassword">
-                  {(field) => (
-                    <div className="flex items-center gap-2">
-                      <field.Checkbox label="Show Password" labelClass="text-xs items-center" />
-                    </div>
-                  )}
-                </form.AppField>
                 <form.AppField name="rememberMe">
                   {(field) => <field.Checkbox label="Remember Me" labelClass="text-xs items-center" />}
                 </form.AppField>

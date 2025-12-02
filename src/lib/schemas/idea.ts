@@ -2,39 +2,10 @@ import { z } from 'zod/v4'
 
 import { paginationQySchema, paginationRsSchema, sortQySchema } from '@/lib/schemas/common'
 
+import { CollaboratorStatus, IdeaActionEnum, IdeaStageEnum, IdeaStatusEnum } from '../enums'
 import { bareParticipantSchema, baseParticipantSchema } from './client'
 import { createIdeaProfileAnswerRqSchema, ideaProfileAnswerSchema, updateIdeaProfileAnswerRqSchema } from './idea-profile'
-
-export const IdeaStageEnum = {
-  STAGE_0: 'STAGE_0',
-  STAGE_1: 'STAGE_1',
-  STAGE_2: 'STAGE_2',
-  STAGE_3: 'STAGE_3',
-} as const
-
-export type IdeaStageEnum = (typeof IdeaStageEnum)[keyof typeof IdeaStageEnum]
-
-export const IdeaStatusEnum = {
-  IN_PROGRESS: 'IN_PROGRESS',
-  PENDING: 'PENDING',
-  IN_REVIEW: 'IN_REVIEW',
-  COACH_PENDING: 'COACH_PENDING',
-  COACH_REVIEW: 'COACH_REVIEW',
-  REJECTED: 'REJECTED',
-  COMPLETED: 'COMPLETED',
-} as const
-
-export type IdeaStatusEnum = (typeof IdeaStatusEnum)[keyof typeof IdeaStatusEnum]
-
-export const CollaboratorStatus = {
-  PENDING: 'PENDING',
-  ACCEPTED: 'ACCEPTED',
-  ACCEPTED_SHADOW: 'ACCEPTED_SHADOW',
-  REJECTED: 'REJECTED',
-  DELETED: 'DELETED',
-} as const
-
-export type CollaboratorStatus = (typeof CollaboratorStatus)[keyof typeof CollaboratorStatus]
+import { bareUserAccountSchema } from './user-account'
 
 const baseIdeaCollaborationSchema = z.object({
   designation: z.string().optional(),
@@ -48,6 +19,33 @@ export const ideaCollaborationSchema = baseIdeaCollaborationSchema.extend({
   status: z.enum(CollaboratorStatus),
   invitedAt: z.date(),
   acceptedAt: z.date().nullable(),
+})
+
+export const bareCollaboratorSchema = ideaCollaborationSchema.pick({
+  id: true,
+  participant: true,
+  participantId: true,
+  designation: true,
+})
+
+export const baseIdeaActivitySchema = z.object({
+  ideaId: z.uuid(),
+  response: z.string().optional(),
+  action: z.enum(IdeaActionEnum),
+})
+
+export const ideaActivitySchema = baseIdeaActivitySchema.extend({
+  id: z.number(),
+  userId: z.string().optional(),
+  collaboratorId: z.number().optional(),
+  updatedAt: z.string(),
+  oldStage: z.enum(IdeaStageEnum).optional(),
+  oldStatus: z.enum(IdeaStatusEnum).optional(),
+  newStage: z.enum(IdeaStageEnum).optional(),
+  newStatus: z.enum(IdeaStatusEnum).optional(),
+  user: bareUserAccountSchema.optional(),
+  collaborator: bareCollaboratorSchema.optional(),
+  notificationText: z.string(),
 })
 
 const baseIdeaSchema = z.object({
@@ -145,3 +143,5 @@ export const bareIdeaProfileQuestionSchema = ideaProfileQuestionSchema.pick({
   minLength: true,
   maxLength: true,
 })
+
+export const fetchIdeaActivityRsSchema = z.array(ideaActivitySchema)

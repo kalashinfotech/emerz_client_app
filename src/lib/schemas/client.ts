@@ -25,7 +25,6 @@ export const createParticipantRqSchema = z.object({
     .max(50),
   promoCode: z.string().optional(),
   tosAgreed: z.boolean(),
-  showPassword: z.boolean().default(false).optional(),
   confirmPassword: z.string(),
 })
 

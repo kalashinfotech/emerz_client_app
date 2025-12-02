@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import type { ReactNode } from 'react'
 
 import { useStore } from '@tanstack/react-form'
 import { format } from 'date-fns'
-import { CircleCheck, Loader2 } from 'lucide-react'
+import { CircleCheck, EyeIcon, EyeOffIcon, Loader2 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
@@ -503,5 +503,102 @@ export function DateField({
       {note && <p className="text-muted-foreground text-xs">{note}</p>}
       {field.state.meta.isTouched && <ErrorMessages errors={errors} />}
     </div>
+  )
+}
+
+export function PasswordField({
+  label,
+  subLabel,
+  note,
+  mandatory,
+  ...props
+}: {
+  label?: string
+  mandatory?: boolean
+  subLabel?: ReactNode
+  note?: string
+} & React.ComponentProps<'input'>) {
+  const field = useFieldContext<string>()
+  const errors = useStore(field.store, (state) => state.meta.errors)
+  const [isVisible, setIsVisible] = useState(false)
+
+  return (
+    <div>
+      <Label htmlFor={label} className="mb-2 ml-1 flex justify-between leading-5">
+        <div className="flex items-center gap-2">
+          {label}{' '}
+          {subLabel && (
+            <>
+              {typeof subLabel === 'string' ? (
+                <span className="text-muted-foreground text-xs">{subLabel}</span>
+              ) : (
+                subLabel
+              )}
+            </>
+          )}
+          {mandatory && <sup>*</sup>}
+        </div>
+      </Label>
+      <div className="relative">
+        <Input id={label} type={isVisible ? 'text' : 'password'} placeholder="Password" className="pr-9" {...props} />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsVisible((prevState) => !prevState)}
+          className="text-muted-foreground focus-visible:ring-ring/50 absolute inset-y-0 right-0 rounded-l-none hover:bg-transparent">
+          {isVisible ? <EyeOffIcon /> : <EyeIcon />}
+          <span className="sr-only">{isVisible ? 'Hide password' : 'Show password'}</span>
+        </Button>
+      </div>
+      {note && <p className="text-muted-foreground text-xs">{note}</p>}
+      {field.state.meta.isTouched && <ErrorMessages errors={errors} />}
+    </div>
+  )
+}
+
+export function FloatingPasswordField({
+  label,
+  subLabel,
+  note,
+  mandatory,
+  placeholder,
+  ...props
+}: {
+  label: string
+  mandatory?: boolean
+  subLabel?: string
+  note?: string
+} & React.ComponentProps<'input'>) {
+  const field = useFieldContext<string>()
+  const errors = useStore(field.store, (state) => state.meta.errors)
+  const [isVisible, setIsVisible] = useState(false)
+
+  return (
+    <>
+      <div className="relative">
+        <FloatingLabelInput
+          id={label}
+          label={label}
+          className="pr-9"
+          type={isVisible ? 'text' : 'password'}
+          value={field.state.value}
+          onBlur={field.handleBlur}
+          onChange={(e) => field.handleChange(e.target.value)}
+          {...props}
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsVisible((prevState) => !prevState)}
+          className="text-muted-foreground focus-visible:ring-ring/50 absolute inset-y-0 right-0 rounded-l-none hover:bg-transparent">
+          {isVisible ? <EyeOffIcon /> : <EyeIcon />}
+          <span className="sr-only">{isVisible ? 'Hide password' : 'Show password'}</span>
+        </Button>
+      </div>
+      {note && <p className="text-muted-foreground text-xs">{note}</p>}
+      {field.state.meta.isTouched && <ErrorMessages errors={errors} />}
+    </>
   )
 }

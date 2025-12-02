@@ -1,12 +1,6 @@
 import { z } from 'zod/v4'
 
-export const UserTypeEnum = {
-  SUPERADMIN: 'SUPERADMIN',
-  FACULTY: 'FACULTY',
-  REGULAR: 'REGULAR',
-} as const
-
-export type UserTypeEnum = (typeof UserTypeEnum)[keyof typeof UserTypeEnum]
+import { UserTypeEnum } from '../enums'
 
 export const baseUserAccountSchema = z.object({
   salutation: z.string().max(20).nullable(),

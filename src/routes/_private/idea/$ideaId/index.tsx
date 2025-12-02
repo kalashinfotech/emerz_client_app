@@ -4,7 +4,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import type { AxiosError } from 'axios'
 import { format } from 'date-fns'
-import { BadgeCheck, Edit3, HouseIcon, NotebookText, PencilOff, SquircleDashed, Users2 } from 'lucide-react'
+import { ActivityIcon, BadgeCheck, Edit3, HouseIcon, NotebookText, PencilOff, SquircleDashed, Users2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import type { TError, UpdateIdeaRqDto } from '@/types'
@@ -19,13 +19,15 @@ import { IdeaStatusStepper } from '@/components/blocks/idea-stage-stepper'
 import { QuestionResource } from '@/components/blocks/question-resource'
 import { Container } from '@/components/elements/container'
 import { Confirmation } from '@/components/modals/confirmation'
+import { IdeaAcitivityTab } from '@/components/tabs/idea-activity'
 import { IdeaCollaboratorTab } from '@/components/tabs/idea-collaborator'
 
 import { UseUpdateIdea, fetchIdeaById } from '@/api/ideas'
 
 import { useAppForm } from '@/hooks/use-app-form'
 
-import { IdeaStageEnum, IdeaStatusEnum, updateIdeaRqSchema } from '@/lib/schemas/idea'
+import { IdeaStageEnum, IdeaStatusEnum } from '@/lib/enums'
+import { updateIdeaRqSchema } from '@/lib/schemas/idea'
 
 type FormMeta = {
   isDraft: boolean
@@ -102,6 +104,12 @@ function RouteComponent() {
               <Users2 className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
               Team
               <Badge className="min-w-5 px-1 text-[0.6rem]">{totalCollaborators}</Badge>
+            </TabsTrigger>
+            <TabsTrigger
+              value="activity"
+              className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+              <ActivityIcon className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
+              Activity
             </TabsTrigger>
             <TabsTrigger
               value="bivr"
@@ -254,6 +262,9 @@ function RouteComponent() {
           </TabsContent>
           <TabsContent value="bivr">
             <BivrPage ideaId={ideaId} idea={data} refetch={refetch} />
+          </TabsContent>
+          <TabsContent value="activity">
+            <IdeaAcitivityTab ideaId={ideaId} />
           </TabsContent>
         </Tabs>
       </Container>
