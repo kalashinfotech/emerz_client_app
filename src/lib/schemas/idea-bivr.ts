@@ -1,6 +1,6 @@
 import { z } from 'zod/v4'
 
-import { ideaCollaborationSchema } from './idea'
+import { ideaCollaborationSchema } from './idea-collaboration'
 
 const bivrAnswersSchema = z.object({
   id: z.int(),

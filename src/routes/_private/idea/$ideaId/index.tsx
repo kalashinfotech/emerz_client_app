@@ -4,7 +4,17 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import type { AxiosError } from 'axios'
 import { format } from 'date-fns'
-import { ActivityIcon, BadgeCheck, Edit3, HouseIcon, NotebookText, PencilOff, SquircleDashed, Users2 } from 'lucide-react'
+import {
+  ActivityIcon,
+  BadgeCheck,
+  Edit3,
+  HouseIcon,
+  InfoIcon,
+  NotebookText,
+  PencilOff,
+  SquircleDashed,
+  Users2,
+} from 'lucide-react'
 import { toast } from 'sonner'
 
 import type { TError, UpdateIdeaRqDto } from '@/types'
@@ -13,6 +23,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { BivrPage } from '@/components/blocks/bivr-page'
 import { IdeaStatusStepper } from '@/components/blocks/idea-stage-stepper'
@@ -25,6 +36,7 @@ import { IdeaCollaboratorTab } from '@/components/tabs/idea-collaborator'
 import { UseUpdateIdea, fetchIdeaById } from '@/api/ideas'
 
 import { useAppForm } from '@/hooks/use-app-form'
+import { useAuth } from '@/hooks/use-auth'
 
 import { IdeaStageEnum, IdeaStatusEnum } from '@/lib/enums'
 import { updateIdeaRqSchema } from '@/lib/schemas/idea'
@@ -47,6 +59,7 @@ function RouteComponent() {
   const { updateIdea } = UseUpdateIdea(ideaId)
   const [edit, setEdit] = useState(false)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const { sessionInfo } = useAuth()
 
   const form = useAppForm({
     defaultValues: {
@@ -232,8 +245,21 @@ function RouteComponent() {
                           label="Submit"
                           icon={BadgeCheck}
                           onClick={() => setShowConfirmation(true)}
+                          disabled={data.ownerId !== sessionInfo?.id}
                         />
                       </form.AppForm>
+                      {data.ownerId !== sessionInfo?.id && (
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Button size="icon" variant="ghost">
+                              <InfoIcon />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            Only the owner ({data.owner.fullName}) could final submit this idea.
+                          </TooltipContent>
+                        </Tooltip>
+                      )}
                     </CardFooter>
                   )}
                 </Card>

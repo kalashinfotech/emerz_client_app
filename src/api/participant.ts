@@ -1,7 +1,12 @@
 import { useMutation } from '@tanstack/react-query'
 import type { ColumnFilter, ColumnSort } from '@tanstack/react-table'
 
-import type { FetchParticipantRsDto, UpdateParticipantRqDto, UpdateParticipantRsDto } from '@/types'
+import type {
+  FetchCollaboratorRsDto,
+  FetchParticipantRsDto,
+  UpdateParticipantRqDto,
+  UpdateParticipantRsDto,
+} from '@/types'
 import type { FetchInAppNotificationRsDto } from '@/types/in-app-notification'
 
 import { fetchQuery } from '.'
@@ -59,4 +64,28 @@ export const UseUpdateMyProfile = () => {
     },
   })
   return { updateMyProfile, reset, isPending, isError, error, isSuccess }
+}
+
+export const UseMarkNotificationRead = () => {
+  const {
+    mutateAsync: markRead,
+    reset,
+    isPending,
+    isError,
+    error,
+    isSuccess,
+  } = useMutation({
+    mutationKey: ['participant', 'notification'],
+    mutationFn: async ({ notificationId }: { notificationId: number }): Promise<null> => {
+      const endPoint = `${baseSuburl}/me/notification/${notificationId}/read`
+      const response = await axiosPrivate.patch(endPoint)
+      return response.data
+    },
+  })
+  return { markRead, reset, isPending, isError, error, isSuccess }
+}
+
+export const fetchInviteById = (inviteId: number, enabled: boolean = true) => {
+  const endpoint = `${baseSuburl}/me/invite/${inviteId}`
+  return fetchQuery<FetchCollaboratorRsDto>(endpoint, { queryKey: [...queryKey, inviteId, 'invitation'], enabled })
 }

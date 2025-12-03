@@ -21,8 +21,10 @@ import { Route as PrivateDashboardRouteImport } from './routes/_private/dashboar
 import { Route as AuthSignupRouteImport } from './routes/_auth/signup'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthForgotPasswordRouteImport } from './routes/_auth/forgot-password'
+import { Route as PrivateInviteIndexRouteImport } from './routes/_private/invite/index'
 import { Route as PrivateIdeaIndexRouteImport } from './routes/_private/idea/index'
 import { Route as PrivateIdeaAddRouteImport } from './routes/_private/idea/add'
+import { Route as PrivateInviteInviteIdIndexRouteImport } from './routes/_private/invite/$inviteId/index'
 import { Route as PrivateIdeaIdeaIdIndexRouteImport } from './routes/_private/idea/$ideaId/index'
 
 const PrivateRouteRoute = PrivateRouteRouteImport.update({
@@ -84,6 +86,11 @@ const AuthForgotPasswordRoute = AuthForgotPasswordRouteImport.update({
   path: '/forgot-password',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const PrivateInviteIndexRoute = PrivateInviteIndexRouteImport.update({
+  id: '/invite/',
+  path: '/invite/',
+  getParentRoute: () => PrivateRouteRoute,
+} as any)
 const PrivateIdeaIndexRoute = PrivateIdeaIndexRouteImport.update({
   id: '/idea/',
   path: '/idea/',
@@ -94,6 +101,12 @@ const PrivateIdeaAddRoute = PrivateIdeaAddRouteImport.update({
   path: '/idea/add',
   getParentRoute: () => PrivateRouteRoute,
 } as any)
+const PrivateInviteInviteIdIndexRoute =
+  PrivateInviteInviteIdIndexRouteImport.update({
+    id: '/invite/$inviteId/',
+    path: '/invite/$inviteId/',
+    getParentRoute: () => PrivateRouteRoute,
+  } as any)
 const PrivateIdeaIdeaIdIndexRoute = PrivateIdeaIdeaIdIndexRouteImport.update({
   id: '/idea/$ideaId/',
   path: '/idea/$ideaId/',
@@ -113,7 +126,9 @@ export interface FileRoutesByFullPath {
   '/terms-and-conditions': typeof PublicTermsAndConditionsRoute
   '/idea/add': typeof PrivateIdeaAddRoute
   '/idea': typeof PrivateIdeaIndexRoute
+  '/invite': typeof PrivateInviteIndexRoute
   '/idea/$ideaId': typeof PrivateIdeaIdeaIdIndexRoute
+  '/invite/$inviteId': typeof PrivateInviteInviteIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -128,7 +143,9 @@ export interface FileRoutesByTo {
   '/terms-and-conditions': typeof PublicTermsAndConditionsRoute
   '/idea/add': typeof PrivateIdeaAddRoute
   '/idea': typeof PrivateIdeaIndexRoute
+  '/invite': typeof PrivateInviteIndexRoute
   '/idea/$ideaId': typeof PrivateIdeaIdeaIdIndexRoute
+  '/invite/$inviteId': typeof PrivateInviteInviteIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -146,7 +163,9 @@ export interface FileRoutesById {
   '/_public/terms-and-conditions': typeof PublicTermsAndConditionsRoute
   '/_private/idea/add': typeof PrivateIdeaAddRoute
   '/_private/idea/': typeof PrivateIdeaIndexRoute
+  '/_private/invite/': typeof PrivateInviteIndexRoute
   '/_private/idea/$ideaId/': typeof PrivateIdeaIdeaIdIndexRoute
+  '/_private/invite/$inviteId/': typeof PrivateInviteInviteIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -163,7 +182,9 @@ export interface FileRouteTypes {
     | '/terms-and-conditions'
     | '/idea/add'
     | '/idea'
+    | '/invite'
     | '/idea/$ideaId'
+    | '/invite/$inviteId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -178,7 +199,9 @@ export interface FileRouteTypes {
     | '/terms-and-conditions'
     | '/idea/add'
     | '/idea'
+    | '/invite'
     | '/idea/$ideaId'
+    | '/invite/$inviteId'
   id:
     | '__root__'
     | '/'
@@ -195,7 +218,9 @@ export interface FileRouteTypes {
     | '/_public/terms-and-conditions'
     | '/_private/idea/add'
     | '/_private/idea/'
+    | '/_private/invite/'
     | '/_private/idea/$ideaId/'
+    | '/_private/invite/$inviteId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -293,6 +318,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthForgotPasswordRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_private/invite/': {
+      id: '/_private/invite/'
+      path: '/invite'
+      fullPath: '/invite'
+      preLoaderRoute: typeof PrivateInviteIndexRouteImport
+      parentRoute: typeof PrivateRouteRoute
+    }
     '/_private/idea/': {
       id: '/_private/idea/'
       path: '/idea'
@@ -305,6 +337,13 @@ declare module '@tanstack/react-router' {
       path: '/idea/add'
       fullPath: '/idea/add'
       preLoaderRoute: typeof PrivateIdeaAddRouteImport
+      parentRoute: typeof PrivateRouteRoute
+    }
+    '/_private/invite/$inviteId/': {
+      id: '/_private/invite/$inviteId/'
+      path: '/invite/$inviteId'
+      fullPath: '/invite/$inviteId'
+      preLoaderRoute: typeof PrivateInviteInviteIdIndexRouteImport
       parentRoute: typeof PrivateRouteRoute
     }
     '/_private/idea/$ideaId/': {
@@ -339,7 +378,9 @@ interface PrivateRouteRouteChildren {
   PrivateSettingsRoute: typeof PrivateSettingsRoute
   PrivateIdeaAddRoute: typeof PrivateIdeaAddRoute
   PrivateIdeaIndexRoute: typeof PrivateIdeaIndexRoute
+  PrivateInviteIndexRoute: typeof PrivateInviteIndexRoute
   PrivateIdeaIdeaIdIndexRoute: typeof PrivateIdeaIdeaIdIndexRoute
+  PrivateInviteInviteIdIndexRoute: typeof PrivateInviteInviteIdIndexRoute
 }
 
 const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
@@ -348,7 +389,9 @@ const PrivateRouteRouteChildren: PrivateRouteRouteChildren = {
   PrivateSettingsRoute: PrivateSettingsRoute,
   PrivateIdeaAddRoute: PrivateIdeaAddRoute,
   PrivateIdeaIndexRoute: PrivateIdeaIndexRoute,
+  PrivateInviteIndexRoute: PrivateInviteIndexRoute,
   PrivateIdeaIdeaIdIndexRoute: PrivateIdeaIdeaIdIndexRoute,
+  PrivateInviteInviteIdIndexRoute: PrivateInviteInviteIdIndexRoute,
 }
 
 const PrivateRouteRouteWithChildren = PrivateRouteRoute._addFileChildren(

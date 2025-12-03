@@ -2,31 +2,15 @@ import { z } from 'zod/v4'
 
 import { paginationQySchema, paginationRsSchema, sortQySchema } from '@/lib/schemas/common'
 
-import { CollaboratorStatus, IdeaActionEnum, IdeaStageEnum, IdeaStatusEnum } from '../enums'
+import { IdeaActionEnum, IdeaStageEnum, IdeaStatusEnum } from '../enums'
 import { bareParticipantSchema, baseParticipantSchema } from './client'
-import { createIdeaProfileAnswerRqSchema, ideaProfileAnswerSchema, updateIdeaProfileAnswerRqSchema } from './idea-profile'
+import { bareCollaboratorSchema, ideaCollaborationSchema } from './idea-collaboration'
+import {
+  createParticipantIdeaAnswerRqSchema,
+  participantAnswerSchema,
+  updateParticipantAnswerRqSchema,
+} from './idea-question'
 import { bareUserAccountSchema } from './user-account'
-
-const baseIdeaCollaborationSchema = z.object({
-  designation: z.string().optional(),
-  emailId: z.email(),
-})
-
-export const ideaCollaborationSchema = baseIdeaCollaborationSchema.extend({
-  id: z.number(),
-  participantId: z.uuid().optional(),
-  participant: bareParticipantSchema.optional(),
-  status: z.enum(CollaboratorStatus),
-  invitedAt: z.date(),
-  acceptedAt: z.date().nullable(),
-})
-
-export const bareCollaboratorSchema = ideaCollaborationSchema.pick({
-  id: true,
-  participant: true,
-  participantId: true,
-  designation: true,
-})
 
 export const baseIdeaActivitySchema = z.object({
   ideaId: z.uuid(),
@@ -60,11 +44,11 @@ const baseIdeaSchema = z.object({
 
 export const createIdeaRqSchema = baseIdeaSchema.extend({
   invites: z.array(z.email()),
-  answers: createIdeaProfileAnswerRqSchema,
+  answers: createParticipantIdeaAnswerRqSchema,
 })
 
 export const updateIdeaRqSchema = baseIdeaSchema.extend({
-  answers: updateIdeaProfileAnswerRqSchema,
+  answers: updateParticipantAnswerRqSchema,
 })
 
 export const ideaSchema = baseIdeaSchema.extend({
@@ -78,7 +62,7 @@ export const ideaSchema = baseIdeaSchema.extend({
   ownerId: z.uuid(),
   owner: bareParticipantSchema,
   collaborators: z.array(ideaCollaborationSchema).nullable(),
-  answers: z.array(ideaProfileAnswerSchema).nullable(),
+  answers: z.array(participantAnswerSchema).nullable(),
 })
 export const bareIdeaSchema = ideaSchema.pick({ id: true, title: true })
 
@@ -132,8 +116,6 @@ export const baseIdeaProfileQuestionSchema = z.object({
 export const ideaProfileQuestionSchema = baseIdeaProfileQuestionSchema.extend({
   id: z.int(),
 })
-
-export const createIdeaProfileQuestionRqSchema = baseIdeaProfileQuestionSchema.extend({})
 
 export const bareIdeaProfileQuestionSchema = ideaProfileQuestionSchema.pick({
   id: true,

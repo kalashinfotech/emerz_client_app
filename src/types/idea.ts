@@ -11,6 +11,7 @@ import type {
   ideaSchema,
   updateIdeaRqSchema,
 } from '@/lib/schemas/idea'
+import type { fetchCollaboratorRsSchema } from '@/lib/schemas/idea-collaboration'
 
 export type CreateIdeaRqDto = z.infer<typeof createIdeaRqSchema>
 export type UpdateIdeaRqDto = z.infer<typeof updateIdeaRqSchema>
@@ -21,3 +22,5 @@ export type CreateIdeaInvitesRqDto = z.infer<typeof createIdeaInvitesRqSchema>
 export type IdeaModel = z.infer<typeof ideaSchema>
 export type FetchIdeaActivityRsDto = z.infer<typeof fetchIdeaActivityRsSchema>
 export type IdeaActivityModel = z.infer<typeof ideaActivitySchema>
+
+export type FetchCollaboratorRsDto = z.infer<typeof fetchCollaboratorRsSchema>

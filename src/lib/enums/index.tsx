@@ -50,3 +50,11 @@ export const IdeaActionEnum = {
 } as const
 
 export type IdeaActionEnum = (typeof IdeaActionEnum)[keyof typeof IdeaActionEnum]
+
+export const QuestionGroupEnum = {
+  STAGE_0: 'STAGE_0',
+  STAGE_2: 'STAGE_2',
+  STAGE_3: 'STAGE_3',
+} as const
+
+export type QuestionGroupEnum = (typeof QuestionGroupEnum)[keyof typeof QuestionGroupEnum]

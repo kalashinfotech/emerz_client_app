@@ -1,5 +1,5 @@
 import type { z } from 'zod/v4'
 
-import type { fetchIdeaProfileQuestionRsSchema } from '@/lib/schemas/idea-profile'
+import type { fetchQuestionRsSchema } from '@/lib/schemas/idea-question'
 
-export type FetchIdeaProfileQuestionRsDto = z.infer<typeof fetchIdeaProfileQuestionRsSchema>
+export type FetchIdeaProfileQuestionRsDto = z.infer<typeof fetchQuestionRsSchema>

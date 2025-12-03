@@ -1,16 +1,18 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
+import type { AxiosError } from 'axios'
 import { BellIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
-import type { BareParticipantModel } from '@/types'
+import type { BareParticipantModel, TError } from '@/types'
 import type { BareUserAccountModel } from '@/types/user-account'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 
-import { fetchMyNotificationList } from '@/api/participant'
+import { UseMarkNotificationRead, fetchMyNotificationList } from '@/api/participant'
 
 import { useAuth } from '@/hooks/use-auth'
 
@@ -70,6 +72,8 @@ export function NotificationMenu() {
     fetchMyNotificationList(sessionInfo?.id || '', 0, [], [{ id: 'createdAt', desc: true }], 10, !!sessionInfo?.id),
   )
 
+  const { markRead } = UseMarkNotificationRead()
+
   const backendNotifications: BackendNotification[] = useMemo(() => {
     if (!rawResp?.data) return []
     return rawResp.data.map((n: any) => ({
@@ -108,6 +112,15 @@ export function NotificationMenu() {
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)))
     if (clicked.link) {
       window.location.href = clicked.link
+    }
+
+    try {
+      await markRead({ notificationId: clicked.id })
+    } catch (e) {
+      const err = e as AxiosError<TError>
+      toast.error(
+        err.response?.data.error?.message || 'Something went wrong. Please contact administrator or try again later.',
+      )
     }
 
     // TODO: call your backend to mark this notification as read:

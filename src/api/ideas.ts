@@ -1,4 +1,4 @@
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import type { ColumnFilter, ColumnSort } from '@tanstack/react-table'
 
 import type {
@@ -116,6 +116,7 @@ export const UseResendIdeaInvite = (ideaId: string) => {
   })
   return { resendInvite, isPending, isError, error, isSuccess }
 }
+
 export const UseDeleteCollaborator = (ideaId: string) => {
   const {
     mutateAsync: deleteCollaborator,
@@ -133,6 +134,34 @@ export const UseDeleteCollaborator = (ideaId: string) => {
     },
   })
   return { deleteCollaborator, reset, isPending, isError, error, isSuccess }
+}
+
+export const UseUpdateInvite = () => {
+  const queryClient = useQueryClient()
+  const {
+    mutateAsync: updateInvite,
+    isPending,
+    isError,
+    error,
+    isSuccess,
+  } = useMutation({
+    mutationKey: ['idea', 'invite'],
+    mutationFn: async ({
+      inviteId,
+      acceptOrReject,
+    }: {
+      inviteId: number
+      acceptOrReject: 'accept' | 'reject'
+    }): Promise<null> => {
+      const endPoint = `${baseSuburl}/invite/${inviteId}/${acceptOrReject}`
+      const response = await axiosPrivate.get(endPoint)
+      return response.data
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData([...queryKey, 'idea', 'invite'], data)
+    },
+  })
+  return { updateInvite, isPending, isError, error, isSuccess }
 }
 
 export const fetchIdeaActivityByIdeaId = (ideaId: string, enabled: boolean = true) => {
