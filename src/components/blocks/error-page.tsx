@@ -23,7 +23,7 @@ export const ErrorPage: FC<ErrorPageProps> = ({ error, resetErrorBoundary }) => 
 
   if (error instanceof AxiosError) {
     httpCode = error.response?.status
-    rawMessage = error.response?.data?.desc ?? error.message
+    rawMessage = error.response?.data?.error?.message ?? error.message
   } else if (error instanceof Error) {
     rawMessage = error.message
   }
@@ -65,8 +65,7 @@ export const ErrorPage: FC<ErrorPageProps> = ({ error, resetErrorBoundary }) => 
       className={cn('flex min-h-[80vh] flex-col items-center justify-center px-4 text-center')}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
+      transition={{ duration: 0.5 }}>
       <div className="mx-auto flex max-w-md flex-col items-center gap-2">
         <div className="bg-destructive flex h-12 w-12 items-center justify-center rounded-full">
           <TriangleAlert size={30} className="text-white" strokeWidth={1.5} />

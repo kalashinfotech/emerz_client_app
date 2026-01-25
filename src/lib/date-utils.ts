@@ -1,17 +1,32 @@
 import { format, intervalToDuration, isValid, parse, parseISO } from 'date-fns'
 
+export function formatDateToDisplay(inputDate: string, customFormat?: string): string | null {
+  const parsed = parseISO(inputDate)
+
+  if (!isValid(parsed)) {
+    console.error('Parsed date is invalid', parsed, inputDate)
+    return null
+  }
+
+  const formatToUse = customFormat ?? 'dd/MM/yyyy'
+  return format(parsed, formatToUse)
+}
 /**
  * Converts a date string from 'yyyy-MM-dd' to 'dd/MM/yyyy'.
  * @param {string} inputDate - The input date string in 'yyyy-MM-dd' format.
  * @param customFormat - Optional custom format string (overrides default behavior).
  * @returns {string|null} The formatted date string in 'dd/MM/yyyy', or null if input is invalid.
  */
-export function formatDateToDisplay(inputDate: string, customFormat?: string): string | null {
+export function formatDateToDisplay1(inputDate: string, customFormat?: string): string | null {
   const parsed = parse(inputDate, 'yyyy-MM-dd', new Date())
-  if (!isValid(parsed)) return null
+  if (!isValid(parsed)) {
+    console.error('Parsed date is invalid', parsed, inputDate)
+    return null
+  }
   const defaultFormat = 'dd/MM/yyyy'
   const formatToUse = customFormat || defaultFormat
-  return format(parsed, formatToUse)
+  const f = format(parsed, formatToUse)
+  return f
 }
 
 /**
@@ -79,9 +94,20 @@ export function computeAge(birthDateInput: string | Date): number | null {
   return years ?? 0
 }
 
-export function formatTimeToDisplay(time: string): string {
-  const [hours, minutes] = time.split(':').map(Number)
-  const period = hours >= 12 ? 'PM' : 'AM'
-  const formattedHours = hours % 12 || 12 // Convert 0 to 12 for 12 AM
-  return `${formattedHours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')} ${period}`
+export function getDay(date: string): string | null {
+  return formatDateToDisplay(date, 'EEEE')
+}
+
+export function getMonthName(date: string): string | null {
+  return format(parseISO(date), 'MMM')
+}
+
+export const minutesTo12Hour = (minutes: number) => {
+  const h24 = Math.floor(minutes / 60)
+  const m = minutes % 60
+
+  const period = h24 >= 12 ? 'p.m.' : 'a.m.'
+  const h12 = h24 % 12 || 12
+
+  return `${h12}:${m.toString().padStart(2, '0')} ${period}`
 }

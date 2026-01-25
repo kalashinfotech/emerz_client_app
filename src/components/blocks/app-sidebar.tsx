@@ -20,6 +20,7 @@ import {
 
 import { useAuth } from '@/hooks/use-auth'
 
+import { useTheme } from '@/context/theme-context'
 import { menu } from '@/lib/menu'
 import { cn } from '@/lib/utils'
 
@@ -28,6 +29,7 @@ import { IdeasList } from './ideas-list'
 export function AppSidebar() {
   const navigate = useNavigate()
   const { state } = useSidebar()
+  const { theme } = useTheme()
   const { sessionInfo, signOut, setSessionInfo } = useAuth()
   if (!sessionInfo) return null
   const initials = `${sessionInfo.firstName[0]}${sessionInfo.lastName[0]}`
@@ -38,7 +40,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton className="pointer-events-none h-auto">
               {state === 'expanded' ? (
-                <img src="/logo-full.png" className="h-6" />
+                <img src={theme === 'dark' ? '/logo-white.png' : '/logo-full.png'} className="h-6" />
               ) : (
                 <img src="/logo-small.png" className="h-4" />
               )}
@@ -116,7 +118,7 @@ export function AppSidebar() {
                   <ChevronsUpDown className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side="top" className="w-[--radix-popper-anchor-width]">
+              <DropdownMenuContent side="top" className="w-60">
                 <DropdownMenuItem
                   onClick={() => {
                     signOut()

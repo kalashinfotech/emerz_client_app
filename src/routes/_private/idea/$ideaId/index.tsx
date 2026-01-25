@@ -7,6 +7,7 @@ import { format } from 'date-fns'
 import {
   ActivityIcon,
   BadgeCheck,
+  CalendarDays,
   Edit3,
   HouseIcon,
   InfoIcon,
@@ -32,6 +33,7 @@ import { Container } from '@/components/elements/container'
 import { Confirmation } from '@/components/modals/confirmation'
 import { IdeaAcitivityTab } from '@/components/tabs/idea-activity'
 import { IdeaCollaboratorTab } from '@/components/tabs/idea-collaborator'
+import { IdeaMeetingTab } from '@/components/tabs/idea-meeting'
 
 import { UseUpdateIdea, fetchIdeaById } from '@/api/ideas'
 
@@ -99,37 +101,46 @@ function RouteComponent() {
   const isDraft =
     data.stage === IdeaStageEnum.STAGE_0 ||
     (data.stage === IdeaStageEnum.STAGE_1 && data.status === IdeaStatusEnum.IN_PROGRESS)
+  const showMeeting = data.allowedCapabilities.includes('MEETING_BOOK')
+  const showBivr = data.allowedCapabilities.includes('BIVR_VIEW')
   const totalCollaborators = data.collaborators?.length
   return (
     <>
       <Container title="Idea" subtitle={data.title} className="w-full px-8 sm:px-16">
-        <Tabs className="w-full" defaultValue="overview">
+        <Tabs key={`${ideaId}`} className="w-full" defaultValue="overview">
           <TabsList className="text-foreground mb-3 h-auto w-full justify-start gap-2 rounded-none border-b bg-transparent px-0 py-1">
             <TabsTrigger
               value="overview"
-              className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+              className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-none dark:data-[state=active]:bg-transparent">
               <HouseIcon className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
               Overview
             </TabsTrigger>
             <TabsTrigger
               value="collaborators"
-              className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+              className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-none dark:data-[state=active]:bg-transparent">
               <Users2 className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
               Team
               <Badge className="min-w-5 px-1 text-[0.6rem]">{totalCollaborators}</Badge>
             </TabsTrigger>
             <TabsTrigger
-              value="activity"
-              className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
-              <ActivityIcon className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
-              Activity
-            </TabsTrigger>
-            <TabsTrigger
               value="bivr"
-              hidden={data.stage !== 'STAGE_2'}
-              className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+              hidden={!showBivr}
+              className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-none dark:data-[state=active]:bg-transparent">
               <NotebookText className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
               BIVR
+            </TabsTrigger>
+            <TabsTrigger
+              value="meeting"
+              hidden={!showMeeting}
+              className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-none dark:data-[state=active]:bg-transparent">
+              <CalendarDays className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
+              Meetings
+            </TabsTrigger>
+            <TabsTrigger
+              value="activity"
+              className="hover:bg-accent hover:text-foreground data-[state=active]:after:bg-primary data-[state=active]:hover:bg-accent relative flex-0 after:absolute after:inset-x-0 after:bottom-0 after:-mb-1 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:border-none dark:data-[state=active]:bg-transparent">
+              <ActivityIcon className="-ms-0.5 me-1.5 opacity-60" size={16} aria-hidden="true" />
+              Activity
             </TabsTrigger>
           </TabsList>
           <TabsContent value="overview">
@@ -203,7 +214,7 @@ function RouteComponent() {
                                           // charCount={subField.state.value.length || 0}
                                           className="min-h-24"
                                           minLength={question!.minLength || 200}
-                                          placeholder="Place holder"
+                                          placeholder="Placeholder"
                                           disabled={!isDraft}
                                         />
                                       </div>
@@ -286,7 +297,10 @@ function RouteComponent() {
           <TabsContent value="collaborators">
             <IdeaCollaboratorTab idea={data} refetch={refetch} />
           </TabsContent>
-          <TabsContent value="bivr">
+          <TabsContent value="meeting" hidden={!showMeeting}>
+            <IdeaMeetingTab idea={data} />
+          </TabsContent>
+          <TabsContent value="bivr" hidden={!showBivr}>
             <BivrPage ideaId={ideaId} idea={data} refetch={refetch} />
           </TabsContent>
           <TabsContent value="activity">

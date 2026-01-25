@@ -104,7 +104,6 @@ export const BivrGroup = ({
     form.setErrorMap({
       onSubmit: { fields: errorMap },
     })
-    console.log('validating all fields')
     form.validateAllFields('submit')
   }, [errorMap, form])
 

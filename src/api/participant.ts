@@ -1,12 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
 import type { ColumnFilter, ColumnSort } from '@tanstack/react-table'
 
-import type {
-  FetchCollaboratorRsDto,
-  FetchParticipantRsDto,
-  UpdateParticipantRqDto,
-  UpdateParticipantRsDto,
-} from '@/types'
+import type { FetchParticipantRsDto, UpdateParticipantRqDto, UpdateParticipantRsDto } from '@/types'
 import type { FetchInAppNotificationRsDto } from '@/types/in-app-notification'
 
 import { fetchQuery } from '.'
@@ -83,9 +78,4 @@ export const UseMarkNotificationRead = () => {
     },
   })
   return { markRead, reset, isPending, isError, error, isSuccess }
-}
-
-export const fetchInviteById = (inviteId: number, enabled: boolean = true) => {
-  const endpoint = `${baseSuburl}/me/invite/${inviteId}`
-  return fetchQuery<FetchCollaboratorRsDto>(endpoint, { queryKey: [...queryKey, inviteId, 'invitation'], enabled })
 }

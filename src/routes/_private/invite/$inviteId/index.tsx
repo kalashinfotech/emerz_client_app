@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import type { AxiosError } from 'axios'
 import { AlertCircleIcon, BadgeCheck, BadgeX, CircleCheck, Lightbulb, Send } from 'lucide-react'
@@ -12,11 +12,11 @@ import { Alert, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 
+import { ErrorPage } from '@/components/blocks/error-page'
 import { Container } from '@/components/elements/container'
 import { Confirmation } from '@/components/modals/confirmation'
 
-import { UseUpdateInvite } from '@/api/ideas'
-import { fetchInviteById } from '@/api/participant'
+import { UseUpdateInvite, fetchInvite } from '@/api/ideas'
 
 export const Route = createFileRoute('/_private/invite/$inviteId/')({
   component: RouteComponent,
@@ -24,7 +24,7 @@ export const Route = createFileRoute('/_private/invite/$inviteId/')({
 
 function RouteComponent() {
   const { inviteId } = Route.useParams()
-  const { data, refetch } = useSuspenseQuery(fetchInviteById(Number(inviteId)))
+  const { data, error, isError, refetch } = useQuery(fetchInvite(inviteId))
   const { updateInvite } = UseUpdateInvite()
   const [showConfirmation, setShowConfirmation] = useState(false)
   const queryClient = useQueryClient()
@@ -32,17 +32,22 @@ function RouteComponent() {
 
   const handleUpdate = async (acceptOrReject: 'accept' | 'reject') => {
     try {
-      await updateInvite({ inviteId: Number(inviteId), acceptOrReject })
+      await updateInvite({ tokenOrId: inviteId, acceptOrReject })
       toast.success('Success', { description: `Invitation ${acceptOrReject}ed.` })
       queryClient.invalidateQueries({ queryKey: ['ideas', 'list'] })
       refetch()
-    } catch (error) {
-      const err = error as AxiosError<TError>
+    } catch (e1) {
+      const err = e1 as AxiosError<TError>
       toast.error(
         err.response?.data.error?.message || 'Something went wrong. Please contact administrator or try again later.',
       )
     }
   }
+  if (isError) {
+    return <ErrorPage error={error} />
+  }
+
+  if (!data) return
   return (
     <Container title="Collaboration Invite">
       <Card>

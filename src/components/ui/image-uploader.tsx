@@ -132,7 +132,6 @@ export function ImageUploader({
       }
 
       setFinalImageUrl(newFinalUrl)
-      console.log('cropped', croppedFile)
 
       onComplete && onComplete(croppedFile, newFinalUrl)
 

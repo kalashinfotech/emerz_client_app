@@ -34,7 +34,7 @@ const QuestionResource = ({ question }: QuestionResourceProps) => {
           <DialogDescription className="text-sm">{question.name}</DialogDescription>
         </DialogHeader>
         <ul className="list-disc space-y-2 text-xs">
-          <li>{question.desc}</li>
+          {question.desc && <li>{question.desc}</li>}
           <li>Minimum response length {question.minLength} characters</li>
           <li>Maximum response length {question.maxLength} characters</li>
         </ul>

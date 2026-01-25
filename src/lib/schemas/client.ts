@@ -70,6 +70,7 @@ export const bareParticipantSchema = participantSchema
     middleName: true,
     lastName: true,
     emailId: true,
+    profilePicId: true,
   })
   .extend({ fullName: z.string().optional() })
   .transform((data) => {

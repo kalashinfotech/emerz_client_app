@@ -58,3 +58,29 @@ export const QuestionGroupEnum = {
 } as const
 
 export type QuestionGroupEnum = (typeof QuestionGroupEnum)[keyof typeof QuestionGroupEnum]
+export const MeetingStatusEnum = {
+  CREATED: 'CREATED',
+  ACCEPTED: 'ACCEPTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  PARTICIPANT_CANCELLED: 'PARTICIPANT_CANCELLED',
+  FACULTY_CANCELLED: 'FACULTY_CANCELLED',
+} as const
+
+export type MeetingStatusEnum = (typeof MeetingStatusEnum)[keyof typeof MeetingStatusEnum]
+
+export const MeetingTypeEnum = {
+  FREE: 'FREE',
+  PAID: 'PAID',
+} as const
+
+export type MeetingTypeEnum = (typeof MeetingTypeEnum)[keyof typeof MeetingTypeEnum]
+
+export const IdeaCapabilityEnum = {
+  BIVR_EDIT: 'BIVR_EDIT',
+  BIVR_VIEW: 'BIVR_VIEW',
+  MEETING_BOOK: 'MEETING_BOOK',
+  EVENT_ENROLL: 'EVENT_ENROLL',
+} as const
+
+export type IdeaCapabilityEnum = (typeof IdeaCapabilityEnum)[keyof typeof IdeaCapabilityEnum]

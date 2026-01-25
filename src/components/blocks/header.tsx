@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { Link, useNavigate, useRouter } from '@tanstack/react-router'
+import { useNavigate, useRouter } from '@tanstack/react-router'
 import { CircleX, IdCardLanyard, LogOut, MenuIcon, Settings, User } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -19,10 +19,10 @@ import { Loader } from '@/components/elements/loader'
 import { useAuth } from '@/hooks/use-auth'
 
 import { IdeasSearchCommand } from '../elements/idea-search-menu'
+import { Kbd } from '../ui/kbd'
 import { SidebarTrigger, SidebarTriggerMobile } from '../ui/sidebar'
 import { NotificationMenu } from './notification-menu'
-
-// import { ThemeToggle } from './theme-toggle'
+import { ThemeToggle } from './theme-toggle'
 
 const Header = () => {
   const { signOut, sessionInfo, authInitialized } = useAuth()
@@ -40,6 +40,27 @@ const Header = () => {
       document.body.classList.remove('overflow-hidden') // clean-up just in case
     }
   }, [open])
+
+  // Keyboard shortcut: I
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (
+        e.key.toLowerCase() === 'i' &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        !(e.target instanceof HTMLInputElement) &&
+        !(e.target instanceof HTMLTextAreaElement)
+      ) {
+        e.preventDefault()
+        navigate({ to: '/idea/add' })
+      }
+    }
+
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
   if (!authInitialized) {
     return <Loader />
   }
@@ -53,19 +74,27 @@ const Header = () => {
         <div className="py-4">
           <SidebarTrigger className="" size="icon" variant="ghost" />
         </div>
-        <div className="flex gap-4">
-          <IdeasSearchCommand />
-          <Button asChild className="animate-wiggle-sm hover:animate-none">
-            <Link to="/idea/add">Create Idea</Link>
+        <div className="flex items-center gap-4">
+          <IdeasSearchCommand
+            onSelect={(ideaId) => {
+              navigate({ to: '/idea/$ideaId', params: { ideaId } })
+            }}
+          />
+          <Button className="animate-wiggle-sm hover:animate-none">
+            Create Idea
+            <Kbd data-icon="inline-end" className="translate-x-0.5 font-mono">
+              I
+            </Kbd>
           </Button>
           <NotificationMenu />
+          <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild className="cursor-pointer">
               <Avatar>
                 {sessionInfo.profilePicId && (
                   <AvatarImage
                     className="object-cover"
-                    src={`${import.meta.env.VITE_BACKEND_URL}/client/participant/profile/${sessionInfo.profilePicId || 1}?size=thumbnail`}
+                    src={`${import.meta.env.VITE_BACKEND_URL}/client/participant/profile/${sessionInfo.profilePicId || 0}?size=thumbnail`}
                   />
                 )}
                 <AvatarFallback className="border">
@@ -112,9 +141,6 @@ const Header = () => {
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
-          {/* <div> */}
-          {/*   <ThemeToggle /> */}
-          {/* </div> */}
         </div>
       </header>
       <header className="flex h-16 items-center justify-between px-4 md:hidden">

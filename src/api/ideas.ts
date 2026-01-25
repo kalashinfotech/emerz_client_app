@@ -4,7 +4,9 @@ import type { ColumnFilter, ColumnSort } from '@tanstack/react-table'
 import type {
   CreateIdeaInvitesRqDto,
   CreateIdeaRqDto,
-  FetchIdeaActivityRsDto,
+  FetchCollaboratorRsDto,
+  FetchIdeaActivityListRsDto,
+  FetchIdeaAnswerHistoryRsDto,
   FetchIdeaRsDto,
   FetchMyIdeaListRsDto,
   IdRs,
@@ -147,6 +149,36 @@ export const UseUpdateInvite = () => {
   } = useMutation({
     mutationKey: ['idea', 'invite'],
     mutationFn: async ({
+      tokenOrId,
+      acceptOrReject,
+    }: {
+      tokenOrId: string
+      acceptOrReject: 'accept' | 'reject'
+    }): Promise<null> => {
+      const isToken = isNaN(Number(tokenOrId)) ? true : false
+      const endPoint = `${baseSuburl}/invite/update`
+      const response = await axiosPrivate.get(endPoint, {
+        params: { acceptOrReject, ...(isToken ? { token: tokenOrId } : { inviteId: tokenOrId }) },
+      })
+      return response.data
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData([...queryKey, 'idea', 'invite'], data)
+    },
+  })
+  return { updateInvite, isPending, isError, error, isSuccess }
+}
+export const UseUpdateInviteByToken = () => {
+  const queryClient = useQueryClient()
+  const {
+    mutateAsync: updateInviteByToken,
+    isPending,
+    isError,
+    error,
+    isSuccess,
+  } = useMutation({
+    mutationKey: ['idea', 'invite'],
+    mutationFn: async ({
       inviteId,
       acceptOrReject,
     }: {
@@ -161,10 +193,44 @@ export const UseUpdateInvite = () => {
       queryClient.setQueryData([...queryKey, 'idea', 'invite'], data)
     },
   })
-  return { updateInvite, isPending, isError, error, isSuccess }
+  return { updateInviteByToken, isPending, isError, error, isSuccess }
+}
+export const fetchIdeaActivityByIdeaId = (
+  ideaId: string,
+  page: number,
+  columnFilters: ColumnFilter[],
+  sorting: ColumnSort[],
+  pageSize: number = 10,
+  enabled: boolean = true,
+) => {
+  const filters = columnFilters.reduce<Record<string, string>>((acc, obj) => {
+    acc[obj.id] = obj.value as string
+    return acc
+  }, {})
+
+  const endpoint = `${baseSuburl}/${ideaId}/activity`
+  const params = { page, pageSize, ...filters, sorting }
+  return fetchQuery<FetchIdeaActivityListRsDto>(endpoint, {
+    queryKey: [...queryKey, 'activity', ideaId, page, columnFilters, sorting, pageSize],
+    enabled,
+    params,
+  })
 }
 
-export const fetchIdeaActivityByIdeaId = (ideaId: string, enabled: boolean = true) => {
-  const endpoint = `${baseSuburl}/${ideaId}/activity`
-  return fetchQuery<FetchIdeaActivityRsDto>(endpoint, { queryKey: [...queryKey, 'activity', ideaId], enabled })
+export const fetchIdeaAnswerHistoryByActivityId = (ideaId: string, ideaActivityId: number, enabled: boolean = true) => {
+  const endpoint = `${baseSuburl}/${ideaId}/activity/${ideaActivityId}/history`
+  return fetchQuery<FetchIdeaAnswerHistoryRsDto>(endpoint, {
+    queryKey: [...queryKey, 'answer', 'history', ideaId, ideaActivityId],
+    enabled,
+  })
+}
+
+export const fetchInvite = (tokenOrId: string, enabled: boolean = true) => {
+  const isToken = isNaN(Number(tokenOrId)) ? true : false
+  const endpoint = `${baseSuburl}/invite`
+  return fetchQuery<FetchCollaboratorRsDto>(endpoint, {
+    queryKey: [...queryKey, tokenOrId, 'invitation'],
+    params: isToken ? { token: tokenOrId } : { inviteId: tokenOrId },
+    enabled,
+  })
 }

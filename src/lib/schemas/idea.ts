@@ -2,15 +2,24 @@ import { z } from 'zod/v4'
 
 import { paginationQySchema, paginationRsSchema, sortQySchema } from '@/lib/schemas/common'
 
-import { IdeaActionEnum, IdeaStageEnum, IdeaStatusEnum } from '../enums'
+import { IdeaActionEnum, IdeaCapabilityEnum, IdeaStageEnum, IdeaStatusEnum } from '../enums'
 import { bareParticipantSchema, baseParticipantSchema } from './client'
 import { bareCollaboratorSchema, ideaCollaborationSchema } from './idea-collaboration'
 import {
   createParticipantIdeaAnswerRqSchema,
   participantAnswerSchema,
+  questionSchema,
   updateParticipantAnswerRqSchema,
 } from './idea-question'
 import { bareUserAccountSchema } from './user-account'
+
+export const participantAnswerHistorySchema = z.object({
+  id: z.number(),
+  question: questionSchema,
+  answer: z.string(),
+  ideaActivityId: z.number().nullable(),
+  collaborator: bareCollaboratorSchema.optional(),
+})
 
 export const baseIdeaActivitySchema = z.object({
   ideaId: z.uuid(),
@@ -30,6 +39,7 @@ export const ideaActivitySchema = baseIdeaActivitySchema.extend({
   user: bareUserAccountSchema.optional(),
   collaborator: bareCollaboratorSchema.optional(),
   notificationText: z.string(),
+  assignedToUser: bareUserAccountSchema.nullable().optional(),
 })
 
 const baseIdeaSchema = z.object({
@@ -66,7 +76,12 @@ export const ideaSchema = baseIdeaSchema.extend({
 })
 export const bareIdeaSchema = ideaSchema.pick({ id: true, title: true })
 
-export const fetchIdeaRsSchema = ideaSchema
+export const fetchIdeaRsSchema = ideaSchema.extend({
+  assignedToFaculty: bareUserAccountSchema.optional().nullable(),
+  assignedToUser: bareUserAccountSchema.optional().nullable(),
+  meetingCredits: z.number(),
+  allowedCapabilities: z.array(z.enum(IdeaCapabilityEnum)),
+})
 
 export const fetchIdeaListRsSchema = z.object({
   data: z.array(ideaSchema),
@@ -126,4 +141,11 @@ export const bareIdeaProfileQuestionSchema = ideaProfileQuestionSchema.pick({
   maxLength: true,
 })
 
-export const fetchIdeaActivityRsSchema = z.array(ideaActivitySchema)
+export const fetchIdeaActivityListRsSchema = z.object({
+  data: z.array(ideaActivitySchema.extend({ answersHistoryCount: z.number().optional() })),
+  pagination: paginationRsSchema,
+})
+
+export const fetchIdeaActivityHistoryRsSchema = z.array(
+  participantAnswerHistorySchema.extend({ oldAnswer: z.string().optional() }),
+)

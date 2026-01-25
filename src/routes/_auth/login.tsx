@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useAppForm } from '@/hooks/use-app-form'
 import { useAuth } from '@/hooks/use-auth'
 
+import { useTheme } from '@/context/theme-context'
 import { signInRqSchema } from '@/lib/schemas/auth'
 
 type RedirectSearch = {
@@ -30,6 +31,7 @@ export const Route = createFileRoute('/_auth/login')({
 
 function RouteComponent() {
   const { signIn } = useAuth()
+  const { theme } = useTheme()
   const search = Route.useSearch()
   const navigate = Route.useNavigate()
   const router = useRouter()
@@ -55,13 +57,13 @@ function RouteComponent() {
   })
 
   return (
-    <div className="flex flex-col items-center space-y-4">
-      <Card className="from-background/50 via-background/50 to-primary-10/50 w-[90%] rounded-2xl bg-radial-[at_50%_75%] to-90% px-4 py-4 backdrop-blur-md md:w-[400px] md:py-8">
+    <div className="flex w-full flex-col items-center space-y-4 px-16 md:px-0">
+      <Card className="w-full rounded-2xl px-0 py-4 shadow-xl backdrop-blur-md md:w-[400px] md:px-4 md:py-8">
         <CardHeader>
           <CardTitle className="flex items-center gap-1 text-base font-normal md:text-xl">
             <span>Welcome</span>
             <span>to</span>
-            <img src="/logo-full.png" className="w-20" />
+            <img src={theme === 'dark' ? '/logo-white.png' : '/logo-full.png'} className="w-20" />
           </CardTitle>
           <CardDescription className="text-xs">Please enter your login details.</CardDescription>
         </CardHeader>
@@ -74,13 +76,11 @@ function RouteComponent() {
             }}>
             <div className="grid w-full items-center gap-4">
               <form.AppField name="emailId">
-                {(field) => (
-                  <field.FloatingTextField label="Email ID" placeholder="Enter your email" autoComplete="username" />
-                )}
+                {(field) => <field.TextField label="Email ID" placeholder="Enter your email" autoComplete="username" />}
               </form.AppField>
               <form.AppField name="password">
                 {(field) => (
-                  <field.FloatingPasswordField
+                  <field.PasswordField
                     label="Password"
                     placeholder="Enter your password"
                     autoComplete="current-password"
@@ -93,16 +93,9 @@ function RouteComponent() {
                 </form.AppField>
               </div>
               <div className="w-full space-y-4">
-                <form.Subscribe
-                  selector={(state) => [state.isValid && !state.isPristine, state.isSubmitting]}
-                  children={([canSubmit, isSubmitting]) => (
-                    <>
-                      <Button className="w-full" type="submit" disabled={!canSubmit}>
-                        {isSubmitting ? '...' : 'Login'}
-                      </Button>
-                    </>
-                  )}
-                />
+                <form.AppForm>
+                  <form.SubscribeButton label="Login" onClick={() => form.handleSubmit()} className="w-full" />
+                </form.AppForm>
                 <div className="flex items-center gap-2">
                   <div className="bg-muted h-px w-full" />
                   <p className="shrink-0 text-xs">Or continue with</p>
@@ -117,12 +110,7 @@ function RouteComponent() {
                     const returnTo = encodeURIComponent(window.location.pathname || '/dashboard')
                     window.location.href = `${apiBase}/client/auth/google?state=${returnTo}`
                   }}>
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                    <path
-                      d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                      fill="currentColor"
-                    />
-                  </svg>
+                  <img src="/google-logo.svg" width="16" />
                   Google
                 </Button>
               </div>

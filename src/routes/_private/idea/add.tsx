@@ -77,7 +77,6 @@ function RouteComponent() {
   const title = useStore(form.store, (state) => state.values.title)
   const titleMeta = useStore(form.store, (state) => state.fieldMeta.title)
   const formErrors = useStore(form.store, (state) => state.errors)
-  console.log(formErrors)
 
   const handleNext = () => {
     // Bounds check
@@ -142,7 +141,7 @@ function RouteComponent() {
   const totalSubSteps = QUESTIONS.length - 1
 
   return (
-    <Container title="Idea" subtitle="Create">
+    <Container title="Idea" subtitle="Create" Icon={Lightbulb}>
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -173,24 +172,20 @@ function RouteComponent() {
                 )}>
                 {step === 0 ? 1 : <Check className="size-4" />}
               </p>
-              <Progress value={(step / 1) * 100} className="bg-muted h-0.5" indicatorClassName="bg-primary" />
+              <Progress value={(step / 1) * 100} className="h-0.5" indicatorClassName="bg-primary" />
               <p
                 className={cn(
                   'bg-primary text-background flex size-6 shrink-0 items-center justify-center rounded-full text-xs',
-                  { 'bg-muted text-muted-foreground': step < 1 },
+                  { 'bg-muted dark:bg-muted-foreground/10 text-muted-foreground': step < 1 },
                   { 'bg-primary size-8': step === 1 },
                 )}>
                 {step <= 1 && subStep === 0 ? 2 : <Check className="size-4" />}
               </p>
-              <Progress
-                value={(subStep / totalSubSteps) * 100}
-                className="bg-muted h-0.5"
-                indicatorClassName="bg-primary"
-              />
+              <Progress value={(subStep / totalSubSteps) * 100} className="h-0.5" indicatorClassName="bg-primary" />
               <p
                 className={cn(
                   'bg-primary text-background flex size-6 shrink-0 items-center justify-center rounded-full text-xs',
-                  { 'bg-muted text-muted-foreground': step !== 2 },
+                  { 'bg-muted dark:bg-muted-foreground/10 text-muted-foreground': step !== 2 },
                   { 'bg-primary size-8': step === 2 },
                 )}>
                 3
@@ -217,7 +212,9 @@ function RouteComponent() {
                     <subField.TextArea
                       label={
                         <div className="flex items-center gap-2">
-                          <p>1. {QUESTIONS[0].name} *</p>
+                          <p>
+                            1. {QUESTIONS[0].name} <sup>*</sup>
+                          </p>
                           <QuestionResource question={QUESTIONS[0]} />
                         </div>
                       }

@@ -17,10 +17,10 @@ const FloatingLabel = React.forwardRef<React.ComponentRef<typeof Label>, React.C
     return (
       <Label
         className={cn(
-          'peer-focus:bg-background peer-focus:dark:secondary dark:bg-background bg-background absolute start-2 top-2 z-10 origin-[0] scale-75 transform',
+          'peer-focus:bg-background peer-focus:dark:bg-input bg-background absolute start-2 top-2 z-10 origin-left scale-75 transform dark:bg-transparent',
           'text-muted-foreground -translate-y-4 cursor-text px-2 text-xs duration-300 peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2',
           'peer-placeholder-shown:scale-100 peer-focus:top-2 peer-focus:-translate-y-4 peer-focus:scale-75 peer-focus:px-2 rtl:peer-focus:left-auto',
-          'rtl:peer-focus:translate-x-1/4',
+          'rounded-xl rtl:peer-focus:translate-x-1/4',
           className,
         )}
         ref={ref}

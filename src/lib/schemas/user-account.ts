@@ -2,6 +2,11 @@ import { z } from 'zod/v4'
 
 import { UserTypeEnum } from '../enums'
 
+export const bareRoleOnlySchema = z.object({
+  id: z.number(),
+  name: z.string(),
+})
+
 export const baseUserAccountSchema = z.object({
   salutation: z.string().max(20).nullable(),
   firstName: z.string().max(100),
@@ -27,6 +32,8 @@ export const bareUserAccountSchema = z
     middleName: z.string().max(100).nullable(),
     lastName: z.string().max(100),
     userType: z.enum(UserTypeEnum),
+    roles: z.array(bareRoleOnlySchema).optional(),
+    profilePicId: z.number().optional(),
   })
   .extend({ fullName: z.string().optional() })
   .transform((data) => {

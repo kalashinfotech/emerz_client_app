@@ -16,6 +16,7 @@ const steps = [
     Icon: FileEdit,
     statuses: {
       IN_PROGRESS: 'The idea is being drafted or updated before its first submission.',
+      END: 'Drafting is complete and the idea has been submitted.',
     },
   },
   {
@@ -27,6 +28,7 @@ const steps = [
       PENDING: 'The idea has been submitted and is awaiting preliminary review.',
       IN_REVIEW: 'The idea is under reconsideration after being rejected, awaiting evaluator review.',
       REJECTED: 'The idea has been reviewed and rejected at the preliminary evaluation stage.',
+      END: 'Pre-validation is complete and the idea has moved forward.',
     },
   },
   {
@@ -39,6 +41,7 @@ const steps = [
       PENDING: 'The idea has been submitted and is waiting for business-coach assignment or evaluation.',
       COACH_PENDING: 'A business coach has been assigned and must accept or reject the idea.',
       COACH_REVIEW: 'The assigned business coach is reviewing and evaluating the idea.',
+      END: 'Readiness checks are complete.',
     },
   },
   {
@@ -52,6 +55,7 @@ const steps = [
       COACH_PENDING: 'A coach has been assigned and must accept or reject the idea in the final stage.',
       COACH_REVIEW: 'The coach is reviewing the idea in the final stage before completion.',
       COMPLETED: 'The idea has been fully reviewed, rated, and marked as completed.',
+      END: 'Final validation is complete.',
     },
   },
 ]
@@ -84,6 +88,7 @@ export function IdeaStatusStepper({
       {steps.map((s, idx) => {
         const isCompleted = idx < currentIndex
         const isActive = idx === currentIndex
+        const status = isCompleted ? 'END' : currentStatus
         const Icon = s.Icon as React.ComponentType<React.SVGProps<SVGSVGElement>>
 
         return (
@@ -125,13 +130,15 @@ export function IdeaStatusStepper({
                   )}
                   {isActive && (
                     <span className="bg-primary/10 text-primary ml-2 rounded-full px-2 py-0.5 text-xs font-medium">
-                      {titleCase(currentStatus, '_')}
+                      {titleCase(status, '_')}
                     </span>
                   )}
                 </div>
 
                 {!compact && (
-                  <p className="text-muted-foreground mt-1 text-xs">{s.statuses[currentStatus] || s.description}</p>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    {!isCompleted && !isActive ? s.description : s.statuses[status] || s.description}
+                  </p>
                 )}
               </div>
             </div>

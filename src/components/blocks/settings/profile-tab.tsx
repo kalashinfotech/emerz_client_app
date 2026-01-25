@@ -31,7 +31,6 @@ const ProfileTab = () => {
       // onChange: updateParticipantRqSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log('value is ', value)
       try {
         const updatedData = await updateMyProfile({ request: value })
         toast.success('Success', {
@@ -57,8 +56,6 @@ const ProfileTab = () => {
   const handleAvatarRemove = () => {
     console.log('Avatar removed')
   }
-
-  console.log(form.state.errors)
 
   return (
     <form

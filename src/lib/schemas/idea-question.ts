@@ -18,13 +18,13 @@ export const baseQuestionGroupSchema = z.object({
   groupType: z.enum(QuestionGroupEnum),
 })
 
-const questionSchema = baseQuestionSchema.extend({
+export const questionSchema = baseQuestionSchema.extend({
   id: z.number(),
   group: baseQuestionGroupSchema,
 })
 
 export const baseParticipantAnswerSchema = z.object({
-  answer: z.string(),
+  answer: z.string().min(100),
 })
 
 export const participantAnswerSchema = baseParticipantAnswerSchema.extend({

@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
+import { SearchIcon } from 'lucide-react'
 
-import { Button } from '@/components/ui/button'
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 
 import { Error } from '@/components/elements/error'
 import { Loader } from '@/components/elements/loader'
@@ -14,10 +15,10 @@ import { fetchMyIdeasList } from '@/api/ideas'
 import { useAuth } from '@/hooks/use-auth'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
-import { Badge } from '../ui/badge'
+import { Kbd } from '../ui/kbd'
 
 type IdeasSearchCommandProps = {
-  onSelect?: (value: string, params?: Record<string, string>) => void
+  onSelect?: (ideaId: string) => void
 }
 
 export function IdeasSearchCommand({ onSelect }: IdeasSearchCommandProps) {
@@ -44,24 +45,21 @@ export function IdeasSearchCommand({ onSelect }: IdeasSearchCommandProps) {
     <>
       <Dialog open={open} onOpenChange={setOpen} modal={true}>
         <DialogTrigger asChild>
-          <div className="flex w-fit items-center gap-4">
-            <Button
-              variant="outline"
-              className="hover:bg-background text-muted-foreground w-80 justify-between pr-4"
-              onClick={() => setOpen(true)}>
-              <p>Search my ideas...</p>
-              <div className="flex gap-1">
-                <Badge className="size-6 rounded-sm text-xs" variant="outline">
-                  ⌘
-                </Badge>
-                <Badge className="size-6 rounded-sm text-xs" variant="outline">
-                  K
-                </Badge>
-              </div>
-            </Button>
+          <div className="flex w-full max-w-xs flex-col gap-6">
+            <InputGroup>
+              <InputGroupInput placeholder="Search my ideas..." onClick={() => setOpen(true)} />
+              <InputGroupAddon>
+                <SearchIcon />
+              </InputGroupAddon>
+              <InputGroupAddon align="inline-end">
+                <Kbd>⌘</Kbd>
+                <Kbd>K</Kbd>
+              </InputGroupAddon>
+            </InputGroup>
           </div>
         </DialogTrigger>
         <DialogContent className="p-0">
+          <DialogTitle hidden={true} />
           <Command shouldFilter={false}>
             <CommandInput
               className="h-12"
@@ -81,16 +79,14 @@ export function IdeasSearchCommand({ onSelect }: IdeasSearchCommandProps) {
                     {data?.data.map((item) => {
                       return (
                         <CommandItem
-                          className="py-4"
-                          onSelect={(val) => {
-                            if (onSelect) {
-                              onSelect(val, { patientId: item.id.toString() })
-                            }
+                          className="flex-col items-start gap-1 py-4"
+                          onSelect={() => {
+                            onSelect?.(item.id)
                             setOpen(false)
                           }}
                           key={item.id}>
                           <span>{item.title} </span>
-                          <span className="text-muted-foreground text-[0.625rem] font-medium">({item.displayId})</span>
+                          <span className="text-muted-foreground text-xs font-medium">({item.displayId})</span>
                         </CommandItem>
                       )
                     })}

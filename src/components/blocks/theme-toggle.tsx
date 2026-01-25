@@ -1,27 +1,54 @@
-import { Moon, Sun } from 'lucide-react'
+import { useEffect } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Moon, Sun } from 'lucide-react'
 
 import { useTheme } from '@/context/theme-context'
 
+import { Button } from '../ui/button'
+import { Kbd } from '../ui/kbd'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip'
+
 export function ThemeToggle() {
-  const { setTheme } = useTheme()
+  const { theme, setTheme } = useTheme()
+
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark')
+  }
+
+  // Keyboard shortcut: D
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (
+        e.key.toLowerCase() === 'd' &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey &&
+        !(e.target instanceof HTMLInputElement) &&
+        !(e.target instanceof HTMLTextAreaElement)
+      ) {
+        e.preventDefault()
+        toggleTheme()
+      }
+    }
+
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [theme])
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon" className="rounded-full">
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">Toggle theme</span>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme('light')}>Light</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('dark')}>Dark</DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>System</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button size="icon" variant="outline" className="rounded-full" onClick={toggleTheme}>
+            {theme === 'dark' ? <Moon /> : <Sun />}
+          </Button>
+        </TooltipTrigger>
+
+        <TooltipContent side="bottom" className="flex items-center gap-2">
+          <span>Toggle theme</span>
+          <Kbd>D</Kbd>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   )
 }

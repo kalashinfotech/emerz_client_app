@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import type { AxiosError } from 'axios'
 import { BellIcon } from 'lucide-react'
 import { toast } from 'sonner'
@@ -73,6 +74,7 @@ export function NotificationMenu() {
   )
 
   const { markRead } = UseMarkNotificationRead()
+  const navigate = useNavigate()
 
   const backendNotifications: BackendNotification[] = useMemo(() => {
     if (!rawResp?.data) return []
@@ -108,10 +110,14 @@ export function NotificationMenu() {
 
   const handleNotificationClick = async (id: number) => {
     const clicked = notifications.find((n) => n.id === id)
-    if (!clicked) return
+    if (!clicked) {
+      toast.success('marked read')
+      return
+    }
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, unread: false } : n)))
     if (clicked.link) {
-      window.location.href = clicked.link
+      navigate({ to: clicked.link })
+      // window.location.href = clicked.link
     }
 
     try {
@@ -182,16 +188,6 @@ export function NotificationMenu() {
                     {notification.target && <span className="font-semibold"> {notification.target}</span>}
                   </div>
                   <div className="text-muted-foreground text-xs">{timeAgo(notification.createdAt)}</div>
-                  {notification.type === 'invite' && (
-                    <div className="mt-2 flex items-center gap-1">
-                      <Button size="sm" variant="default">
-                        Accept
-                      </Button>
-                      <Button size="sm" variant="destructive">
-                        Reject
-                      </Button>
-                    </div>
-                  )}
                 </div>
 
                 {notification.unread && (

@@ -1,6 +1,17 @@
+import { useState } from 'react'
+
 import { useQuery } from '@tanstack/react-query'
+import { GitCompareArrows } from 'lucide-react'
 
 import type { IdeaActivityModel } from '@/types'
+
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination'
 
 import { fetchIdeaActivityByIdeaId } from '@/api/ideas'
 
@@ -8,8 +19,12 @@ import { formatUtcStringToLocalDisplay } from '@/lib/date-utils'
 import type { IdeaStatusEnum } from '@/lib/enums'
 import { titleCase } from '@/lib/text-utils'
 
+import { ErrorPage } from '../blocks/error-page'
+import LoadingPage from '../blocks/loading-page'
 import { ProfileAvatar } from '../elements/profile-avatar'
+import { IdeaAnswerHistoryModal } from '../modals/answer-history-modal'
 import { Badge } from '../ui/badge'
+import { Button } from '../ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card'
 
 const getStatusBadgeColor = (status: IdeaStatusEnum) => {
@@ -78,10 +93,20 @@ const hasStatusChanged = (act: IdeaActivityModel) => {
 
 const getActionee = (act: IdeaActivityModel) => {
   if (act.user) {
-    return { firstName: act.user.firstName, lastName: act.user.lastName }
+    return {
+      firstName: act.user.firstName,
+      lastName: act.user.lastName,
+      profilePicId: act.user.profilePicId,
+      displayId: act.user.displayId,
+    }
   }
   if (act.collaborator) {
-    return { firstName: act.collaborator.participant!.firstName, lastName: act.collaborator.participant!.lastName }
+    return {
+      firstName: act.collaborator.participant!.firstName,
+      lastName: act.collaborator.participant!.lastName,
+      profilePicId: act.collaborator.participant!.profilePicId,
+      displayId: act.collaborator.participant!.displayId,
+    }
   }
   return { firstName: '', lastName: '' }
 }
@@ -90,47 +115,125 @@ type IdeaActivityTabProps = {
   ideaId: string
 }
 const IdeaAcitivityTab = ({ ideaId }: IdeaActivityTabProps) => {
-  const { data } = useQuery(fetchIdeaActivityByIdeaId(ideaId))
+  const [page, setPage] = useState(0)
+  // const columnSorters = sortByToState(searchParams.sortBy)
+  // const columnFilters = filterToState(searchParams)
+  const { data, isPending, isError, error } = useQuery(fetchIdeaActivityByIdeaId(ideaId, page, [], [], 10))
+  const [selectedIdeaActivity, setSelectedIdeaActivity] = useState<number>()
+  const [openAnswerHistory, setOpenAnswerHistory] = useState(false)
+  if (isPending) return <LoadingPage />
+  if (isError) return <ErrorPage error={error} />
   return (
-    <Card className="w-[80%]">
-      <CardHeader>
-        <CardTitle>Idea Activity</CardTitle>
-      </CardHeader>
-      <CardContent className="">
-        {data?.map((d, i) => {
-          const actionee = getActionee(d)
-          const statusChange = getStatusChange(d)
-          return (
-            <div key={i} className="py-4 text-sm not-last:border-b">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <ProfileAvatar firstName={actionee.firstName} lastName={actionee.lastName} />
-                  <span className="text-muted-foreground">{d.notificationText} on</span>
-                  {formatUtcStringToLocalDisplay(d.updatedAt, true, 'dd MMM, yyyy hh:mm a')}
-                  {hasStatusChanged(d) && (
-                    <div>
-                      <span>
-                        {statusChange?.from && (
-                          <Badge className={getStatusBadgeColor(d.oldStatus || 'PENDING')}>{statusChange.from}</Badge>
-                        )}{' '}
-                        to <Badge className={getStatusBadgeColor(d.newStatus || 'PENDING')}>{statusChange?.to}</Badge>
-                      </span>
-                    </div>
-                  )}
+    <>
+      <Card>
+        <CardHeader className="flex items-center justify-between">
+          <CardTitle>Idea Activity</CardTitle>
+          <div className="">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    className="bg-primary/10 text-xs"
+                    onClick={() => setPage((prev) => prev - 1)}
+                    isActive={page > 0}
+                  />
+                </PaginationItem>
+                <PaginationItem>
+                  <PaginationNext
+                    className="bg-primary/10 text-xs"
+                    onClick={() => setPage((prev) => prev + 1)}
+                    isActive={page < data.pagination.totalPages - 1}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          </div>
+        </CardHeader>
+        <CardContent className="">
+          {data.data.map((d, i) => {
+            const actionee = getActionee(d)
+            const statusChange = getStatusChange(d)
+            return (
+              <div key={i} className="py-4 text-sm not-last:border-b">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <ProfileAvatar user={actionee} tooltip={actionee.displayId} />
+                    <span className="text-muted-foreground">
+                      {d.notificationText}{' '}
+                      {d.assignedToUser && (
+                        <span>
+                          to <span className="text-foreground">{d.assignedToUser.fullName}</span>
+                        </span>
+                      )}{' '}
+                      on
+                    </span>
+                    {formatUtcStringToLocalDisplay(d.updatedAt, true, 'dd MMM, yyyy hh:mm a')}
+                    {hasStatusChanged(d) && (
+                      <div>
+                        <span>
+                          {statusChange?.from && (
+                            <Badge className={getStatusBadgeColor(d.oldStatus || 'PENDING')}>{statusChange.from}</Badge>
+                          )}{' '}
+                          to <Badge className={getStatusBadgeColor(d.newStatus || 'PENDING')}>{statusChange?.to}</Badge>
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-4">
+                    {d.collaborator && <Badge>{d.collaborator.designation}</Badge>}
+                    {d.user && <Badge variant="secondary">{d.user.roles?.[0].name ?? 'Admin'}</Badge>}
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        setSelectedIdeaActivity(d.id)
+                        setOpenAnswerHistory(true)
+                      }}
+                      disabled={(d.answersHistoryCount || 0) < 1}>
+                      <GitCompareArrows />
+                    </Button>
+
+                    {/* <DropdownMenu> */}
+                    {/*   <DropdownMenuTrigger asChild> */}
+                    {/*     <Button variant="ghost" size="icon" aria-label="More Options"> */}
+                    {/*       <MoreHorizontalIcon /> */}
+                    {/*     </Button> */}
+                    {/*   </DropdownMenuTrigger> */}
+                    {/*   <DropdownMenuContent align="end" className="w-52"> */}
+                    {/*     <DropdownMenuGroup> */}
+                    {/*       <DropdownMenuItem */}
+                    {/*         onClick={() => { */}
+                    {/*           setSelectedIdeaActivity(d.id) */}
+                    {/*           setOpenAnswerHistory(true) */}
+                    {/*         }} */}
+                    {/*         disabled={(d.answersHistoryCount || 0) < 1}> */}
+                    {/*         <Users2 /> */}
+                    {/*         View Changes */}
+                    {/*       </DropdownMenuItem> */}
+                    {/*     </DropdownMenuGroup> */}
+                    {/*   </DropdownMenuContent> */}
+                    {/* </DropdownMenu> */}
+                  </div>
                 </div>
-                {d.collaborator && <Badge>{d.collaborator.designation}</Badge>}
-                {d.user && <Badge variant="secondary">{d.user.userType === 'FACULTY' ? 'Faculty' : 'Admin'}</Badge>}
+                {d.response && (
+                  <div className="bg-background text-muted-foreground ml-11 rounded-lg p-4">
+                    {d.response && <p className="whitespace-break-spaces">{d.response}</p>}
+                  </div>
+                )}
               </div>
-              {d.response && (
-                <div className="bg-background text-muted-foreground ml-11 rounded-lg p-4">
-                  {d.response && <p className="whitespace-break-spaces">{d.response}</p>}
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </CardContent>
-    </Card>
+            )
+          })}
+        </CardContent>
+      </Card>
+      {selectedIdeaActivity && openAnswerHistory && (
+        <IdeaAnswerHistoryModal
+          ideaId={ideaId}
+          ideaActivityId={selectedIdeaActivity}
+          open={openAnswerHistory}
+          onOpenChange={setOpenAnswerHistory}
+        />
+      )}
+    </>
   )
 }
 

@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils'
 
 import { useFieldContext, useFormContext } from '../context/form-context'
 import { FloatingLabelInput } from './ui/floating-label'
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from './ui/input-group'
 
 export function SubscribeButton({ label, icon: Icon, ...props }: { label: string; icon?: LucideIcon } & ButtonProps) {
   const form = useFormContext()
@@ -130,18 +131,13 @@ export function TextField({
   return (
     <div>
       <Label htmlFor={label} className="mb-2 ml-1 flex justify-between leading-5">
-        <div className="flex items-center gap-2">
-          {label}{' '}
-          {subLabel && (
-            <>
-              {typeof subLabel === 'string' ? (
-                <span className="text-muted-foreground text-xs">{subLabel}</span>
-              ) : (
-                subLabel
-              )}
-            </>
+        <div>
+          {label} {subLabel && <span className="text-muted-foreground text-xs">{subLabel}</span>}
+          {mandatory && (
+            <span>
+              <sup>*</sup>
+            </span>
           )}
-          {mandatory && <sup>*</sup>}
         </div>
         {typeof charCount !== 'undefined' && charCount >= 0 ? (
           <div className="text-muted-foreground text-xs">
@@ -539,18 +535,24 @@ export function PasswordField({
           {mandatory && <sup>*</sup>}
         </div>
       </Label>
-      <div className="relative">
-        <Input id={label} type={isVisible ? 'text' : 'password'} placeholder="Password" className="pr-9" {...props} />
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsVisible((prevState) => !prevState)}
-          className="text-muted-foreground focus-visible:ring-ring/50 absolute inset-y-0 right-0 rounded-l-none hover:bg-transparent">
-          {isVisible ? <EyeOffIcon /> : <EyeIcon />}
-          <span className="sr-only">{isVisible ? 'Hide password' : 'Show password'}</span>
-        </Button>
-      </div>
+      <InputGroup className="relative">
+        <InputGroupInput
+          id={label}
+          type={isVisible ? 'text' : 'password'}
+          placeholder="Password"
+          className="pr-9"
+          value={field.state.value}
+          onBlur={field.handleBlur}
+          onChange={(e) => field.handleChange(e.target.value)}
+          {...props}
+        />
+        <InputGroupAddon align="inline-end">
+          <InputGroupButton onClick={() => setIsVisible((prevState) => !prevState)}>
+            {isVisible ? <EyeOffIcon /> : <EyeIcon />}
+            <span className="sr-only">{isVisible ? 'Hide password' : 'Show password'}</span>
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
       {note && <p className="text-muted-foreground text-xs">{note}</p>}
       {field.state.meta.isTouched && <ErrorMessages errors={errors} />}
     </div>
